@@ -1,0 +1,76 @@
+game:Galaga+
+size:{
+  cellsize:20-
+  gridsize:
+    x: 12,
+    y: 15
+  -
++
+Test:
+  space|space|space|space|boss|boss|boss|boss|space|space|space|space,
+  space|space|goei|goei|goei|goei|goei|goei|goei|goei|space|space,
+  space|space|goei|goei|goei|goei|goei|goei|goei|goei|space|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|player|space|space|space|space|space|space
++
+Stage 1:
+  space|space|space|space|boss|boss|boss|space|boss|space|space|space,
+  space|space|goei|goei|goei|goei|goei|goei|goei|goei|space|space,
+  space|space|goei|goei|goei|goei|goei|goei|goei|goei|space|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|player|space|space|space|space|space|space
++
+Stage 2:
+  space|boss|boss|boss|boss|boss|boss|boss|boss|boss|boss|space,
+  space|goei|goei|goei|goei|goei|goei|goei|goei|goei|goei|space,
+  space|goei|goei|goei|goei|goei|goei|goei|goei|goei|goei|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|player|space|space|space|space|space|space
++
+Stage 3:
+  space|boss|boss|boss|boss|boss|boss|boss|boss|boss|boss|space,
+  space|goei|goei|goei|goei|goei|goei|goei|goei|goei|goei|space,
+  space|goei|goei|goei|goei|goei|goei|goei|goei|goei|goei|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|zako|zako|zako|zako|zako|zako|zako|zako|zako|zako|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|space|space|space|space|space|space|space,
+  space|space|space|space|space|player|space|space|space|space|space|space
++
