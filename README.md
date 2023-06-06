@@ -6,6 +6,7 @@ Minigin is a very small project using [SDL2](https://www.libsdl.org/) and [glm](
 [![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/avadae/minigin/releases/latest)
 
 # Project
+
 This project includes the recreated retro game "Galaga". 
 To prove this engine now works, this game was created to showcase the progress of the 2d Engine.
 
@@ -15,4 +16,4 @@ Minigin is, despite perhaps the suggestion in its name, not a game engine. It is
 
 # Use
 
-Download the latest release of this project and compile/run in visual studio. Since students need to have their work on github too, they can use this repository as a template.
+Download the latest release of this project and compile/run the "Galaga" project in the solution in visual studio.
