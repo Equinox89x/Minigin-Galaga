@@ -3,7 +3,7 @@
 #include "Timer.h"
 #include <Minigin.h>
 #include "EnemyComponent.h"
-#include <TextObjectComponent.h>
+//#include <TextObjectComponent.h>
 #include <ValuesComponent.h>
 
 void ShootComponent::Shoot()

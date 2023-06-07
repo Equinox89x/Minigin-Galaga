@@ -29,6 +29,7 @@
 #include "ShootComponent.h"
 #include "MoveMenuComponent.h"
 #include "EnemyComponent.h"
+#include "BackgroundComponent.h"
 //#include "GalagaMath.h"
 #include "CommandProject.h"
 
@@ -70,19 +71,15 @@ void CreateScore(dae::Scene& scene) {
 	goHighscoreValue->GetTransform()->TranslateWorld(width + 20, 140);
 	goUpText->GetTransform()->TranslateWorld(width, 200);
 	goUpTextValue->GetTransform()->TranslateWorld(width + 20, 220);
-	//goHighscoreText->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX/2, WindowSizeY/2);
-	//goHighscoreText2->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX, WindowSizeY);
-	//goHighscoreValue->GetComponent<TextObjectComponent>()->SetPosition(0,0);
-	//goUpText->GetComponent<TextObjectComponent>()->SetPosition(Margin, Margin);
-	//goUpTextValue->GetComponent<TextObjectComponent>()->SetPosition(Margin, Margin);
 
 	for (size_t i = 0; i < 3; i++)
 	{
 		std::shared_ptr<GameObject> life = std::make_shared<dae::GameObject>();
+		life->SetName("life");
 		scene.Add(life);
 		life->AddComponent(new TextureComponent());
 		life->GetComponent<TextureComponent>()->SetTexture("galaga.png");
-		life->GetComponent<TextureComponent>()->SetName("life");
+		//life->GetComponent<TextureComponent>()->SetName("life");
 		life->GetComponent<TextureComponent>()->Scale(0.6f, 0.6f);
 		life->GetTransform()->Translate(width, WindowSizeY / 2);
 		width += life->GetComponent<TextureComponent>()->GetRect().w + 10;
@@ -112,6 +109,12 @@ void MakeMainGalaga(dae::Scene& scene) {
 	//Callback* callback = new Callback;
 	//callback->AddObserver(new HealthObserver(mainPlayer->GetComponent<HealthComponent>()));
 	//mainPlayer->GetComponent<ValuesComponent>()->SetCallback(callback);
+
+	Callback* callback = new Callback;
+	auto scorego{ scene.GetGameObject("Score") };
+	callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
+	callback->AddObserver(new HealthObserver(scene.GetGameObjects("life"), &scene));
+	mainPlayer->GetComponent<ValuesComponent>()->SetCallback(callback);
 
 	//Keyboard
 	mainPlayer->AddComponent(new MoveKeyboardComponent(mainPlayer->GetTransform()->GetPosition()));
@@ -144,6 +147,11 @@ void MakeSecondGalaga(dae::Scene& scene) {
 	//callback->AddObserver(new ScoreObserver(go3->GetComponent<TextObjectComponent>()));
 	//comp->SetCallback(callback);
 
+	Callback* callback = new Callback;
+	auto scorego{ scene.GetGameObject("Score") };
+	callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
+	go->GetComponent<ValuesComponent>()->SetCallback(callback);
+
 	//keyboard
 	go->AddComponent(new MoveControllerComponent(go->GetTransform()->GetPosition()));
 	scene.Add(go);
@@ -167,32 +175,41 @@ void MakeStage(dae::Scene& scene) {
 	scene.Add(container3);
 	scene.Add(container4);
 	scene.Add(container5);
+
 	auto comp1{ new TextureComponent() };
-	comp1->SetName("test");
-	container2->SetName("test");
+	comp1->SetName("bg_back1");
+	container2->SetName("bg_back1");
 	container2->AddComponent(comp1);
-	container2->GetComponent<TextureComponent>("test")->SetTexture("bulletPlayer.png");
+	container2->GetComponent<TextureComponent>("bg_back1")->SetTexture("bg_back.png");
+	auto rect{ container2->GetComponent<TextureComponent>("bg_back1")->GetRect()};
+	auto startPos{ glm::vec2{ 0, 0 - (rect.h + WindowSizeY) } };
 
+	container2->AddComponent(new BackgroundComponent(150.f, startPos, { 0, 0 - (720 * 2) }));
+	container2->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("test1");
-	container3->SetName("test1");
+	comp1->SetName("bg_back2");
+	container3->SetName("bg_back2");
 	container3->AddComponent(comp1);
-	container3->GetComponent<TextureComponent>("test1")->SetTexture("bulletPlayer.png");
-
+	container3->GetComponent<TextureComponent>("bg_back2")->SetTexture("bg_back.png");
+	container3->AddComponent(new BackgroundComponent(150.f, startPos, { 0, 0 - (720 * 5) }));
+	container3->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("test2");
-	container4->SetName("test2");
+	comp1->SetName("bg_front1");
+	container4->SetName("bg_front1");
 	container4->AddComponent(comp1);
-	container4->GetComponent<TextureComponent>("test2")->SetTexture("bulletPlayer.png");
-
+	container4->GetComponent<TextureComponent>("bg_front1")->SetTexture("bg_front.png");
+	container4->AddComponent(new BackgroundComponent(300.f, startPos, { 0, 0 - (720 * 2) }));
+	container4->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("test3");
-	container5->SetName("test3");
+	comp1->SetName("bg_front2");
+	container5->SetName("bg_front2");
 	container5->AddComponent(comp1);
-	container5->GetComponent<TextureComponent>("test3")->SetTexture("bulletPlayer.png");
+	container5->GetComponent<TextureComponent>("bg_front2")->SetTexture("bg_front.png");
+	container5->AddComponent(new BackgroundComponent(300.f, startPos, { 0, 0 - (720 * 5) }));
+	container5->GetComponent<BackgroundComponent>();
 
 	FileReader* file{ new FileReader("../Data/galagamap.txt") };
 	auto str{ file->ReadJsonFile() };

@@ -1,6 +1,6 @@
 #pragma once
-#include "Callback.h"
 #include "Component.h"
+#include "Callback.h"
 #include "Scene.h"
 
 namespace dae

@@ -2,16 +2,17 @@
 #include <string>
 #include "Minigin.h"
 
-void dae::HealthObserver::Notify(GameObject* go, Event event)
+void dae::HealthObserver::Notify(GameObject* /*go*/, Event event)
 {
-	ValuesComponent* comp{ go->GetComponent<ValuesComponent>() };
 	switch (event)
 	{
 	case Event::Live:
-		m_pTextComponent->SetText(std::to_string(comp->GetLives()));
+		if (!GameObjects.empty() && GameObjects.size() <= 0) {
+			m_Scene->Remove(GameObjects[GameObjects.size()]);
+		}
 		break;
 	case Event::Reset:
-		m_pTextComponent->SetText(std::to_string(comp->GetLives()));
+		//m_pTextComponent->SetText(std::to_string(comp->GetLives()));
 		break;
 	}
 }

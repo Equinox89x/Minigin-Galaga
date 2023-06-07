@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "TextObjectComponent.h"
+#include "Scene.h"
 //#include "Steam.h"
 
 
@@ -38,15 +39,15 @@ namespace dae
 
 	};
 
-	class HealthObserver final :
-		public Observer
+	class HealthObserver final : public Observer
 	{
 	public:
-		HealthObserver(TextObjectComponent* const textComponent) : m_pTextComponent(textComponent) {};
+		HealthObserver(const std::vector<std::shared_ptr<GameObject>> gameObjects, Scene* scene) : GameObjects{ gameObjects }, m_Scene{ scene } {};
 		void Notify(GameObject* go, Event event) override;
 
 	private:
-		TextObjectComponent* m_pTextComponent;
+		const std::vector<std::shared_ptr<GameObject>> GameObjects;
+		Scene* m_Scene;
 	};
 
 }

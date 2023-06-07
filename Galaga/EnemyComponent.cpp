@@ -35,46 +35,8 @@ void EnemyComponent::Initialize()
 	Paths.push_back(vec1);
 	Paths.push_back(vec2);
 
-	auto go1{ m_Scene->GetGameObject("test") };
-	auto go2{ m_Scene->GetGameObject("test1") };
-	auto go3{ m_Scene->GetGameObject("test2") };
-	auto go4{ m_Scene->GetGameObject("test3") };
-	go1->GetComponent<TextureComponent>()->SetPosition(P0.x, P0.y);
-	go2->GetComponent<TextureComponent>()->SetPosition(P1.x, P1.y);
-	go3->GetComponent<TextureComponent>()->SetPosition(P2.x, P2.y);
-	go4->GetComponent<TextureComponent>()->SetPosition(P3.x, P3.y);
-
 	RandomPath = std::rand() % static_cast<int>(Paths.size());
 }
-
-//int BinomialCoeff(int n, int i) {
-//	if (i == 0 || i == n)
-//		return 1;
-//
-//	int numerator = 1;
-//	int denominator = 1;
-//
-//	for (int j = 1; j <= i; j++) {
-//		numerator *= (n - j + 1);
-//		denominator *= j;
-//	}
-//
-//	return numerator / denominator;
-//}
-//
-//glm::vec2 CalculateBezierPoint(float t, const std::vector<glm::vec2>& controlPoints) {
-//	int n{ static_cast<int>(controlPoints.size()) - 1 };
-//	float x{ 0.0 };
-//	float y{ 0.0 };
-//
-//	for (int i = 0; i <= n; i++) {
-//		float blend{ static_cast<float>(BinomialCoeff(n, i) * pow(1 - t, n - i) * pow(t, i)) };
-//		x += controlPoints[i].x * blend;
-//		y += controlPoints[i].y * blend;
-//	}
-//
-//	return { x, y };
-//}
 
 void EnemyComponent::Update()
 {
@@ -103,7 +65,7 @@ void EnemyComponent::Update()
 		}
 
 		if (IsDiving) {
-			float movement{ deltaTime * 300 };
+			float movement{ deltaTime * 450 };
 			if (EnemyType != EnemyType::BOSS) {
 				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY - 60) {
 					CanReturn = true;
