@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "TextureComponent.h"
+#include "GalagaMath.h"
 
 using namespace dae;
 
@@ -108,20 +109,9 @@ std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToO
 			overlapRect = { static_cast<int>(overlapPos.x), static_cast<int>(overlapPos.y) ,1,1 };
 		}
 
-		if (IsOverlap(overlapRect, rect)) {
+		if (GalagaMath::IsOverlapping(overlapRect, rect)) {
 			children.push_back(obj.get());
 		}
 	}
 	return children;
-}
-
-bool Scene::IsOverlap(const SDL_Rect& square1, const SDL_Rect& square2) {
-	// Check if the squares overlap on the x-axis
-	bool xOverlap = (square1.x < square2.x + square2.w) && (square1.x + square1.w > square2.x);
-
-	// Check if the squares overlap on the y-axis
-	bool yOverlap = (square1.y < square2.y + square2.h) && (square1.y + square1.h > square2.y);
-
-	// Return true if there is overlap on both axes
-	return xOverlap && yOverlap;
 }

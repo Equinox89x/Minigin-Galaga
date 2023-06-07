@@ -235,6 +235,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="Main.h" />
+    <ClInclude Include="GalagaMath.h" />
     <ClInclude Include="MoveControllerComponent.h" />
     <ClInclude Include="MoveKeyboardComponent.h" />
     <ClInclude Include="Observer.h" />

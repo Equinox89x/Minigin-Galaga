@@ -1,6 +1,7 @@
 #pragma once
 #include "Callback.h"
 #include "Component.h"
+#include "Scene.h"
 
 namespace dae
 {
@@ -9,7 +10,7 @@ namespace dae
 	{
 
 	public:
-		ValuesComponent() : m_pCallback{} {};
+		ValuesComponent(Scene* scene) : m_pCallback{}, m_Scene{scene} {};
 		~ValuesComponent() override;
 		ValuesComponent(const ValuesComponent&) = delete;
 		ValuesComponent(ValuesComponent&&) noexcept = delete;
@@ -43,6 +44,7 @@ namespace dae
 		std::string m_ComponentName;
 
 		Callback* m_pCallback;
+		Scene* m_Scene;
 	};
 }
 

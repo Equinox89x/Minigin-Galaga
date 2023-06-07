@@ -27,9 +27,6 @@ namespace dae
 		virtual void Update() override;
 		//virtual void Render() const override;
 		//virtual void FixedUpdate() override;
-
-
-		glm::vec3 Move(const float cy, float angle, glm::vec3 point);
 		void SetOriginPoint() { m_OriginalPoint = GetGameObject()->GetTransform()->GetPosition(); };
 	};
 }

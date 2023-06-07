@@ -3,6 +3,8 @@
 #include "Timer.h"
 #include <Minigin.h>
 #include "EnemyComponent.h"
+#include <TextObjectComponent.h>
+#include <ValuesComponent.h>
 
 void ShootComponent::Shoot()
 {
@@ -59,6 +61,7 @@ void ShootComponent::Update()
 				NrOfHits++;
 				comp->DestroyEnemy();
 				bullet->MarkForDestroy();
+				m_Scene.GetGameObject("player1")->GetComponent<ValuesComponent>()->IncreaseScore(comp->GetScore());
 				break;
 			}
 		}

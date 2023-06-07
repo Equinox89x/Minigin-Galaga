@@ -29,14 +29,72 @@
 #include "ShootComponent.h"
 #include "MoveMenuComponent.h"
 #include "EnemyComponent.h"
+//#include "GalagaMath.h"
 #include "CommandProject.h"
 
 using namespace dae;
+void CreateScore(dae::Scene& scene) {
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 18);
+	std::shared_ptr<GameObject> scoreBoard = std::make_shared<dae::GameObject>();
+	scene.Add(scoreBoard);
+	scoreBoard->GetTransform()->Translate(WindowSizeX / 2, WindowSizeY / 2);
+
+	std::shared_ptr<GameObject> goHighscoreText = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> goHighscoreText2 = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> goHighscoreValue = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> goUpText = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> goUpTextValue = std::make_shared<dae::GameObject>();
+
+	scene.Add(goHighscoreText);
+	scene.Add(goHighscoreText2);
+	scene.Add(goHighscoreValue);
+	scene.Add(goUpText);
+	scene.Add(goUpTextValue);
+
+	goHighscoreText->AddComponent(new TextObjectComponent("HIGH", font));
+	goHighscoreText2->AddComponent(new TextObjectComponent("SCORE", font));
+	goHighscoreText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
+	goHighscoreText2->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
+
+	goHighscoreValue->AddComponent(new TextObjectComponent("30000", font));
+
+	goUpText->AddComponent(new TextObjectComponent("1UP", font));
+	goUpText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
+
+	goUpTextValue->AddComponent(new TextObjectComponent("00", font));
+	goUpTextValue->SetName("Score");
+
+	auto width{ 720.f-140 };
+	goHighscoreText->GetTransform()->TranslateWorld(width, 100);
+	goHighscoreText2->GetTransform()->TranslateWorld(width + 20, 120);
+	goHighscoreValue->GetTransform()->TranslateWorld(width + 20, 140);
+	goUpText->GetTransform()->TranslateWorld(width, 200);
+	goUpTextValue->GetTransform()->TranslateWorld(width + 20, 220);
+	//goHighscoreText->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX/2, WindowSizeY/2);
+	//goHighscoreText2->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX, WindowSizeY);
+	//goHighscoreValue->GetComponent<TextObjectComponent>()->SetPosition(0,0);
+	//goUpText->GetComponent<TextObjectComponent>()->SetPosition(Margin, Margin);
+	//goUpTextValue->GetComponent<TextObjectComponent>()->SetPosition(Margin, Margin);
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		std::shared_ptr<GameObject> life = std::make_shared<dae::GameObject>();
+		scene.Add(life);
+		life->AddComponent(new TextureComponent());
+		life->GetComponent<TextureComponent>()->SetTexture("galaga.png");
+		life->GetComponent<TextureComponent>()->SetName("life");
+		life->GetComponent<TextureComponent>()->Scale(0.6f, 0.6f);
+		life->GetTransform()->Translate(width, WindowSizeY / 2);
+		width += life->GetComponent<TextureComponent>()->GetRect().w + 10;
+	}
+
+}
 
 void MakeMainGalaga(dae::Scene& scene) {
 	//Main Player
 	std::shared_ptr<GameObject> mainPlayer = std::make_shared<dae::GameObject>();
 	scene.Add(mainPlayer);
+	mainPlayer->SetName("player1");
 
 	//Texture
 	mainPlayer->AddComponent(new TextureComponent());
@@ -45,7 +103,7 @@ void MakeMainGalaga(dae::Scene& scene) {
 	mainPlayer->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - Margin, WindowSizeY - SubMargin * 2);
 
 	//UI
-	mainPlayer->AddComponent(new ValuesComponent());
+	mainPlayer->AddComponent(new ValuesComponent(&scene));
 	mainPlayer->GetComponent<ValuesComponent>()->SetLives(3);
 
 	//bullets
@@ -77,7 +135,7 @@ void MakeSecondGalaga(dae::Scene& scene) {
 	go->GetComponent<TextureComponent>()->SetTexture("galaga.png");
 
 	//UI
-	go->AddComponent(new ValuesComponent());
+	go->AddComponent(new ValuesComponent(&scene));
 	go->GetComponent<ValuesComponent>()->SetLives(3);
 
 	//callback
@@ -98,7 +156,43 @@ void MakeSecondGalaga(dae::Scene& scene) {
 }
 
 void MakeStage(dae::Scene& scene) {
-	std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
+	//std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
+
+
+	std::shared_ptr<GameObject> container2 = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> container3 = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> container4 = std::make_shared<dae::GameObject>();
+	std::shared_ptr<GameObject> container5 = std::make_shared<dae::GameObject>();
+	scene.Add(container2);
+	scene.Add(container3);
+	scene.Add(container4);
+	scene.Add(container5);
+	auto comp1{ new TextureComponent() };
+	comp1->SetName("test");
+	container2->SetName("test");
+	container2->AddComponent(comp1);
+	container2->GetComponent<TextureComponent>("test")->SetTexture("bulletPlayer.png");
+
+
+	comp1 = new TextureComponent();
+	comp1->SetName("test1");
+	container3->SetName("test1");
+	container3->AddComponent(comp1);
+	container3->GetComponent<TextureComponent>("test1")->SetTexture("bulletPlayer.png");
+
+
+	comp1 = new TextureComponent();
+	comp1->SetName("test2");
+	container4->SetName("test2");
+	container4->AddComponent(comp1);
+	container4->GetComponent<TextureComponent>("test2")->SetTexture("bulletPlayer.png");
+
+
+	comp1 = new TextureComponent();
+	comp1->SetName("test3");
+	container5->SetName("test3");
+	container5->AddComponent(comp1);
+	container5->GetComponent<TextureComponent>("test3")->SetTexture("bulletPlayer.png");
 
 	FileReader* file{ new FileReader("../Data/galagamap.txt") };
 	auto str{ file->ReadJsonFile() };
@@ -106,45 +200,58 @@ void MakeStage(dae::Scene& scene) {
 
 	auto gridData{ std::any_cast<std::vector<std::vector<std::string>>>(data["Test"]) };
 	float currentX{ 0.f };
-	float currentY{ 60.f };
+	float currentY{ 48.3f };
+
+	int bossIndex{ 1 };
+	int goeiIndex{ 1 };
+	int zakoIndex{ 1 };
+	int index{ 1 };
 	for (auto strLine : gridData) {
 		for (auto tile : strLine) {
 
 			if (tile == "goei") {
 				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				enemy->SetName("enemy");
-				enemy->AddComponent(new EnemyComponent(EnemyType::GOEI, 50));
+				enemy->AddComponent(new EnemyComponent(&scene, EnemyType::GOEI, index, { currentX, currentY }, 50));
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("goei.png");
 				enemy->GetComponent<TextureComponent>()->SetName("enemy");
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
-				enemy->GetTransform()->Translate(currentX, currentY);
+				enemy->GetTransform()->Translate(-100, -100);
+				//enemy->GetComponent<EnemyComponent>()->SetEndPosition({ currentX, currentY });
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
+				//enemy->GetComponent<EnemyComponent>()->SetEndPosition();
 				enemy->GetComponent<TextureComponent>()->GetRect();
 				scene.Add(enemy);
+				goeiIndex++;
+				index++;
 			}
 			else if (tile == "zako") {
 				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				enemy->SetName("enemy");
-				enemy->AddComponent(new EnemyComponent(EnemyType::ZAKO, 80));
+				enemy->AddComponent(new EnemyComponent(&scene, EnemyType::ZAKO, index, { currentX, currentY }, 80));
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("zako.png");
 				enemy->GetComponent<TextureComponent>()->SetName("enemy");
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
-				enemy->GetTransform()->Translate(currentX, currentY);
+				enemy->GetTransform()->Translate(-100, -100);
+				//enemy->GetComponent<EnemyComponent>()->SetEndPosition({ currentX, currentY });
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
 				enemy->GetComponent<TextureComponent>()->GetRect();
 				scene.Add(enemy);
+				zakoIndex++;
+				index++;
 			}
 			else if (tile == "boss") {
 				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				enemy->SetName("enemy");
-				enemy->AddComponent(new EnemyComponent(EnemyType::BOSS, 150, 400));
+				enemy->AddComponent(new EnemyComponent(&scene, EnemyType::BOSS, index, { currentX, currentY }, 150, 400));
+				//enemy->GetComponent<EnemyComponent>()->SetEndPosition({ currentX, currentY });
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("boss.png");
 				enemy->GetComponent<TextureComponent>()->SetName("enemy");
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
-				enemy->GetTransform()->Translate(currentX, currentY);
+				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
 				enemy->GetComponent<TextureComponent>()->GetRect();
 
@@ -159,6 +266,8 @@ void MakeStage(dae::Scene& scene) {
 				comp->SetOffset({ -76,50 });
 				comp->GetRect();
 				scene.Add(enemy);
+				bossIndex++;
+				index++;
 			}
 			currentX += Cellsize;
 		}
@@ -166,7 +275,7 @@ void MakeStage(dae::Scene& scene) {
 		currentY += Cellsize;
 	}
 
-	scene.Add(container);
+	//scene.Add(container);
 }
 
 void MakeVersusStage(dae::Scene& scene) {
@@ -179,8 +288,8 @@ void MakeMainMenu(dae::Scene& scene) {
 	std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
 	scene.Add(container);
 	//container->AddComponent(new RotatorComponent());
-	container->AddComponent(new MoveMenuComponent(1.f));
-	container->GetTransform()->TranslateWorld(0, 400);
+	container->AddComponent(new MoveMenuComponent(400.f));
+	container->GetTransform()->Translate(0, 720);
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 24);
 
@@ -256,7 +365,7 @@ void MakeMainMenu(dae::Scene& scene) {
 	std::shared_ptr<GameObject> selector = std::make_shared<dae::GameObject>();
 	scene.Add(selector);
 	container->AddChild(selector.get());
-	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusStage));
+	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusStage, &CreateScore));
 	selector->AddComponent(new TextObjectComponent(">", font));
 	selector->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - SubMargin * 2, WindowSizeY / 2);
 	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_UP, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), true));

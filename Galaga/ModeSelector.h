@@ -9,11 +9,12 @@ namespace dae
 	{
 
 	public:
-		ModeSelector(dae::Scene& scene, std::function<void(dae::Scene&)> createMainGalaga, std::function<void(dae::Scene&)> createSecondaryGalaga, std::function<void(dae::Scene&)> createStage, std::function<void(dae::Scene&)> createVersusStage) : m_pScene{ scene } {
+		ModeSelector(dae::Scene& scene, std::function<void(dae::Scene&)> createMainGalaga, std::function<void(dae::Scene&)> createSecondaryGalaga, std::function<void(dae::Scene&)> createStage, std::function<void(dae::Scene&)> createVersusGalaga, std::function<void(dae::Scene&)> createScore) : m_pScene{ scene } {
 			CreateMainGalaga = createMainGalaga;
 			CreateSecondaryGalaga = createSecondaryGalaga;
+			CreateVersusGalaga = createVersusGalaga;
 			CreateStage = createStage;
-			CreateVersusStage = createVersusStage;
+			CreateScore = createScore;
 
 		};
 		~ModeSelector() = default;
@@ -39,7 +40,8 @@ namespace dae
 		std::function<void(dae::Scene& scene)> CreateMainGalaga;
 		std::function<void(dae::Scene& scene)> CreateSecondaryGalaga;		
 		std::function<void(dae::Scene& scene)> CreateStage;
-		std::function<void(dae::Scene& scene)> CreateVersusStage;
+		std::function<void(dae::Scene& scene)> CreateVersusGalaga;
+		std::function<void(dae::Scene& scene)> CreateScore;
 
 		//virtual void Update() override;
 		//virtual void Render() const override;

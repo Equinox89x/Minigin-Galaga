@@ -29,6 +29,9 @@ void dae::ValuesComponent::IncreaseScore(int score)
 	m_Score += score;
 	auto go{ GetGameObject() };
 	m_pCallback->Notify(go, Event::Score);
+
+	m_Scene->GetGameObject("score")->GetComponent<TextObjectComponent>()->SetText(std::to_string(m_Score));
+	
 }
 
 void dae::ValuesComponent::SetCallback(Callback* const subject)

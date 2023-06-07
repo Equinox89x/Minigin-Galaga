@@ -16,6 +16,8 @@ void dae::TransformComponent::UpdateTransforms()
 		auto rot{ parent->GetTransform()->GetRotation() };
 		m_WorldRotation = rot + GetRotation();
 		m_WorldPosition = pos + GetPosition();
+		//m_Rotation += m_WorldRotation;
+		//m_Position += m_WorldPosition;
 	}
 	else{
 		m_Rotation += m_WorldRotation;
@@ -113,6 +115,7 @@ void dae::TransformComponent::AddTranslateWorld(float x, float y, float z)
 	m_WorldPosition.x += x;
 	m_WorldPosition.y += y;
 	m_WorldPosition.z += z;
+	UpdateTransforms();
 }
 
 void dae::TransformComponent::Rotate(const float angle) { Rotate(0, angle, 0); };

@@ -6,7 +6,7 @@
 	#define WindowSizeY 720
 	#define Margin 40.f
 	#define SubMargin Margin * 2
-	#define Cellsize 60.f
+	#define Cellsize 48.3f
 
 namespace dae
 {
