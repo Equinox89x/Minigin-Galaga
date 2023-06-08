@@ -1,5 +1,6 @@
 #include "ValuesComponent.h"
 #include "Callback.h"
+#include "FileReader.h"
 
 dae::ValuesComponent::~ValuesComponent()
 {
@@ -58,10 +59,22 @@ void dae::ValuesComponent::ResetObserver()
 void dae::ValuesComponent::Reset()
 {
 
-	m_Lives = 3;
-	m_Score = 0;
+	//m_Lives = 3;
+	//m_Score = 0;
 	//NrOfHits = 0;
 	//NrOfShotsFired = 0;
+}
+
+void dae::ValuesComponent::GameEnd()
+{
+	FileReader* file{ new FileReader("../Data/highscore.txt") };
+	auto str{ file->ReadGameDataFile() };
+	auto data{ file->ParseDataSimple(str, '+') };
+	auto score{ data["Highscore"] };
+	std::string scoreStr{ std::any_cast<std::string>(score) };
+	if (GetScores() > std::stoi(scoreStr)) {
+		file->WriteData("Highscore", std::to_string(GetScores()));
+	}
 }
 
 int dae::ValuesComponent::GetMissRatio()

@@ -22,6 +22,13 @@ void dae::MoveMenuComponent::Update()
 	}
 }
 
+void dae::MoveMenuComponent::Reset()
+{
+	m_CanMove = true;
+	GetGameObject()->GetTransform()->Translate(0, 720);
+	GetGameObject()->SetIsHidden(false);
+}
+
 void dae::MoveMenuComponent::Initialize()
 {
 	SetOriginPoint();

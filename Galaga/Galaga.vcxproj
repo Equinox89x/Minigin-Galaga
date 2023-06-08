@@ -185,7 +185,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
   <ItemGroup>
     <ClInclude Include="BackgroundComponent.h" />
     <ClInclude Include="CommandProject.h" />
+    <ClInclude Include="EndScreenComponent.h" />
     <ClInclude Include="EnemyComponent.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Galaga.h" />
     <ClInclude Include="ModeSelector.h" />
@@ -197,7 +199,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BackgroundComponent.cpp" />
+    <ClCompile Include="EndScreenComponent.cpp" />
     <ClCompile Include="EnemyComponent.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Galaga.cpp" />
     <ClCompile Include="ModeSelector.cpp" />
     <ClCompile Include="MoveMenuComponent.cpp" />

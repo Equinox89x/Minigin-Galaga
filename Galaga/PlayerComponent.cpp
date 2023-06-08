@@ -3,6 +3,7 @@
 #include <TextureComponent.h>
 #include <ValuesComponent.h>
 #include <Timer.h>
+#include "EnemyManager.h"
 //#include <Minigin.h>
 
 void PlayerComponent::Update()
@@ -20,14 +21,16 @@ void PlayerComponent::Update()
         }
     }
     else {
-        auto childen{ m_Scene->GetGameObjects("Enemy") };
+        auto go{ m_Scene->GetGameObject("EnemyHolder") };
+        auto children{ go->GetChildren("Enemy") };
         auto rect1{ GetGameObject()->GetComponent<TextureComponent>()->GetRect() };
-        for (auto enemy : childen) {
+        for (auto enemy : children) {
             if (enemy->IsMarkedForDestroy()) continue;
             auto rect2{ enemy->GetComponent<TextureComponent>("Enemy")->GetRect() };
             if (GalagaMath::IsOverlapping(rect1, rect2)) {
                 Die();
                 enemy->MarkForDestroy();
+                m_Scene->GetGameObject("EnemyHolder")->GetComponent<EnemyManager>()->CheckStatus();
                 return;
             }
         }

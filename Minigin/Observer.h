@@ -12,6 +12,7 @@ namespace dae
 		Score,
 		GameOver,
 		StageCleared,
+		ToMenu,
 		Reset,
 	};
 
@@ -72,6 +73,18 @@ namespace dae
 		std::function<void(Scene*, Stages, float)> CreateStage;
 		std::function<void(Scene*)> MakeEndScreen;
 		Scene* m_pScene;
+	};	
+	
+	class ToMenu final : public Observer
+	{
+	public:
+		ToMenu(GameObject* menu, std::function<void(Scene*)> createMenuInput, Scene* scene) : Menu{ menu }, CreateMenuInput{ createMenuInput }, m_pScene { scene } {}
+		void Notify(GameObject* go, Event event) override;
+
+	private:
+		GameObject* Menu;
+		Scene* m_pScene;
+		std::function<void(Scene*)> CreateMenuInput;
 	};
 
 }

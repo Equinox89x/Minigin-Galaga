@@ -18,11 +18,12 @@ class EnemyComponent final : public Component
 {
 
 public:
-	EnemyComponent(Scene* scene, EnemyType enemyType, int index, float delayTimer, glm::vec2 endPosition, int score, int divingScore = 0) :
+	EnemyComponent(Scene* scene, EnemyType enemyType, int index, float delayTimer, int pathNr, glm::vec2 endPosition, int score, int divingScore = 0) :
 		m_Scene{ scene },
-		EnemyType{ enemyType }, 
-		Score{ score } ,
-		EndPosition{ endPosition }
+		EnemyType{ enemyType },
+		Score{ score },
+		EndPosition{ endPosition },
+		PathNr{ pathNr }
 	{
 		DivingScore = divingScore != 0 ? divingScore : Score * 2;
 		Index = index != -1 ? index : 0;
@@ -45,6 +46,8 @@ public:
 	void SetEndPosition(glm::vec2 endPos) { EndPosition = endPos; };
 	EnemyType GetEnemyType() { return EnemyType; };
 
+	void TranslateInitialPosition(glm::vec2 addedPos);
+
 private:
 	Scene* m_Scene;
 
@@ -65,6 +68,6 @@ private:
 	int Index{ 0 };
 
 	std::vector<std::vector<glm::vec2>> Paths;
-	int RandomPath{ 0 };
+	int PathNr{ 0 };
 };
 

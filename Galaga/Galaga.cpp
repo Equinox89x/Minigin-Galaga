@@ -33,19 +33,34 @@
 #include "OverlapComponent.h"
 #include "PlayerComponent.h"
 #include "CommandProject.h"
+#include "EndScreenComponent.h"
+#include "EnemyManager.h"
 #include "Callback.h"
 
 
 using namespace dae;
 
+void CreateSelectorInput(dae::Scene* scene) {
+	auto selector{ scene->GetGameObject("Selector") };
+	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_UP, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), true));
+	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_DOWN, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), false));
+	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_SPACE, 0 }, std::make_unique<StartGame>(selector->GetComponent<ModeSelector>(), selector->GetParent()));
+}
+
 void CreateEndScreen(dae::Scene* scene) {
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 18);
 
 	std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
-	auto width{ WindowSizeX/2 - 120 };
-	auto height{ WindowSizeY/2 - 100 };
+	auto width{ WindowSizeX/2 - 120.f };
+	auto height{ WindowSizeY/2 - 100.f };
 	container->GetTransform()->Translate(width, height);
 	container->SetName("EndScreen");
+	container->AddComponent(new EndScreenComponent());
+
+	//callback
+	Callback* callback = new Callback();
+	callback->AddObserver(new ToMenu(scene->GetGameObject("MainMenu").get(), &CreateSelectorInput, scene));
+	container->GetComponent<EndScreenComponent>()->SetCallback(callback);
 
 	GameObject* resultText{ new GameObject() };
 	GameObject* shotsFiredText{ new GameObject() };
@@ -81,7 +96,7 @@ void CreateScore(dae::Scene* scene) {
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 18);
 	std::shared_ptr<GameObject> scoreBoard = std::make_shared<dae::GameObject>();
 	scoreBoard->SetName("ScoreBoard");
-	scoreBoard->GetTransform()->Translate(WindowSizeX -140, 0);
+	scoreBoard->GetTransform()->Translate(GameWindowSizeX, 0);
 
 	GameObject* goHighscoreText = new GameObject();
 	GameObject* goHighscoreText2 = new GameObject();
@@ -100,7 +115,12 @@ void CreateScore(dae::Scene* scene) {
 	goHighscoreText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
 	goHighscoreText2->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
 
-	goHighscoreValue->AddComponent(new TextObjectComponent("30000", font));
+	FileReader* file{ new FileReader("../Data/highscore.txt") };
+	auto str{ file->ReadGameDataFile() };
+	auto data{ file->ParseDataSimple(str, '+') };
+	auto score{ data["Highscore"] };
+	std::string scoreStr{ std::any_cast<std::string>(score) };
+	goHighscoreValue->AddComponent(new TextObjectComponent(scoreStr, font));
 
 	goUpText->AddComponent(new TextObjectComponent("1UP", font));
 	goUpText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
@@ -116,7 +136,7 @@ void CreateScore(dae::Scene* scene) {
 	goUpText->GetTransform()->Translate(0, 200);
 	goUpTextValue->GetTransform()->Translate(20, 220);
 
-	auto width{ 0 };
+	auto width{ 0.f };
 	for (size_t i = 0; i < 3; i++)
 	{
 		GameObject* life{ new GameObject() };
@@ -134,12 +154,14 @@ void CreateScore(dae::Scene* scene) {
 
 }
 
-
 void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
-	FileReader* file{ new FileReader("../Data/galagamap.txt") };
-	auto str{ file->ReadJsonFile() };
-	auto data{ file->ParseJson(str, '+') };
+	std::shared_ptr<GameObject> enemyHolder = std::make_shared<dae::GameObject>();
+	enemyHolder->SetName("EnemyHolder");
 
+	FileReader* file{ new FileReader("../Data/galagamap.txt") };
+	auto str{ file->ReadGameDataFile() };
+	auto data{ file->ParseData(str, '+') };
+	
 	std::string name;
 	switch (stageName)
 	{
@@ -156,21 +178,46 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 		break;
 	}
 
+	std::string name2{ name + " Enemies" };
+	int nrOfEnemies{ std::stoi(std::any_cast<std::string>(data[name2])) };
+	int enemiesPerGroup{ nrOfEnemies / 6 };
+
 	auto gridData{ std::any_cast<std::vector<std::vector<std::string>>>(data[name]) };
 	float currentX{ 0.f };
 	float currentY{ 48.3f };
 
+	float groupDelay{ 0.6f };
+	auto delay{ (0.1f * nrOfEnemies)* (groupDelay*5) };
+	//auto delay{ (0.1f * nrOfEnemies) + 2.f };
+	//delay += groupDelay * 6;
+
+	enemyHolder->AddComponent(new EnemyManager(scene, delay));
+	//callback
+	Callback* callback2 = new Callback();
+	callback2->AddObserver(new StageCleared(&MakeStageOfNr, &CreateEndScreen, scene));
+	enemyHolder->GetComponent<EnemyManager>()->SetCallback(callback2);
+
+	//enemy index per type
 	int bossIndex{ 1 };
 	int goeiIndex{ 1 };
 	int zakoIndex{ 1 };
+
+	//general enemy index
 	int index{ 1 };
+
+	//index nr of enemies per group
+	int groupIndex{ 1 };
+
+	//index for chosen spawn path to take
+	int path{ 0 };
 	for (auto strLine : gridData) {
 		for (auto tile : strLine) {
 
 			if (tile == "goei") {
-				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
-				enemy->AddComponent(new EnemyComponent(scene, EnemyType::GOEI, index, delayTimer, { currentX, currentY }, 50));
+				enemy->AddComponent(new EnemyComponent(scene, EnemyType::GOEI, index, delayTimer, path, { currentX, currentY }, 50));
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("goei.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
@@ -178,14 +225,17 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
 				enemy->GetComponent<TextureComponent>()->GetRect();
-				scene->Add(enemy);
+				//scene->Add(enemy);
+				enemyHolder->AddChild(enemy);
 				goeiIndex++;
 				index++;
+				groupIndex++;
 			}
 			else if (tile == "zako") {
-				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
-				enemy->AddComponent(new EnemyComponent(scene, EnemyType::ZAKO, index, delayTimer, { currentX, currentY }, 80));
+				enemy->AddComponent(new EnemyComponent(scene, EnemyType::ZAKO, index, delayTimer, path, { currentX, currentY }, 80));
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("zako.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
@@ -193,14 +243,17 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
 				enemy->GetComponent<TextureComponent>()->GetRect();
-				scene->Add(enemy);
+				enemyHolder->AddChild(enemy);
+				//scene->Add(enemy);
 				zakoIndex++;
 				index++;
+				groupIndex++;
 			}
 			else if (tile == "boss") {
-				std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
+				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
-				enemy->AddComponent(new EnemyComponent(scene, EnemyType::BOSS, index, delayTimer, { currentX, currentY }, 150, 400));
+				enemy->AddComponent(new EnemyComponent(scene, EnemyType::BOSS, index, delayTimer, path, { currentX, currentY }, 150, 400));
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("boss.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
@@ -219,11 +272,21 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				comp->SetIsVisible(false);
 				comp->SetOffset({ -76,50 });
 				comp->GetRect();
-				scene->Add(enemy);
+				//scene->Add(enemy);
+				enemyHolder->AddChild(enemy);
 				bossIndex++;
 				index++;
+				groupIndex++;
 			}
 			currentX += Cellsize;
+			if (groupIndex == enemiesPerGroup) {
+				delayTimer += groupDelay;
+				groupIndex = 0;
+				path++;
+				if (path > 3) {
+					path = 0;
+				}
+			}
 		}
 		currentX = 0;
 		currentY += Cellsize;
@@ -232,8 +295,8 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	auto go{ std::make_shared<GameObject>() };
 	go->SetName(name);
 	scene->Add(go);
+	scene->Add(enemyHolder);
 }
-
 
 void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
 	auto playerName{ "Player" + std::to_string(id) };
@@ -246,7 +309,7 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
 	//Texture
 	mainPlayer->AddComponent(new TextureComponent());
 	mainPlayer->GetComponent<TextureComponent>()->SetTexture(textureName);
-	mainPlayer->GetComponent<TextureComponent>()->Scale(1, 1);
+	mainPlayer->GetComponent<TextureComponent>()->Scale(0.7f, 0.7f);
 	mainPlayer->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - Margin, WindowSizeY - SubMargin * 2);
 
 	//UI
@@ -267,35 +330,40 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
 	callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
 	mainPlayer->GetComponent<ValuesComponent>()->SetCallback(callback);
 
-	//callback
-	Callback* callback2 = new Callback();
-	callback2->AddObserver(new StageCleared(&MakeStageOfNr, &CreateEndScreen, scene));
-	mainPlayer->GetComponent<ShootComponent>()->SetCallback(callback2);
-
-
-
 	if (id == 0) {
 		//Keyboard
 		mainPlayer->AddComponent(new MoveKeyboardComponent(mainPlayer->GetTransform()->GetPosition()));
 		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_SPACE, id }, std::make_unique<Shoot>(mainPlayer->GetComponent<ShootComponent>()));
 
-		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_a, id }, std::make_unique<MoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>(), glm::vec3(-300.f, 0.0f, 0.0f)));
-		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_d, id }, std::make_unique<MoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>(), glm::vec3(300.f, 0.0f, 0.0f)));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_a, id }, std::make_unique<MoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>(), glm::vec3(-600.f, 0.0f, 0.0f)));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_d, id }, std::make_unique<MoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>(), glm::vec3(600.f, 0.0f, 0.0f)));
 
 		Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP, SDLK_a, id }, std::make_unique<StopMoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>()));
 		Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP, SDLK_d, id }, std::make_unique<StopMoveKeyboard>(mainPlayer->GetComponent<MoveKeyboardComponent>()));
+
+		////Controller
+		//mainPlayer->AddComponent(new MoveControllerComponent(mainPlayer->GetTransform()->GetPosition()));
+
+		//Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, dae::ControllerButton::ButtonA, 0 }, std::make_unique<Shoot>(mainPlayer->GetComponent<ShootComponent>()));
+
+		//Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadLeft, 0 }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(-600.f, 0.0f, 0.0f)));
+		//Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadRight, 0 }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(600.f, 0.0f, 0.0f)));
+
+		//Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadLeft, 0 }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
+		//Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadRight, 0 }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
 	}
-	
-	//Controller
-	mainPlayer->AddComponent(new MoveControllerComponent(mainPlayer->GetTransform()->GetPosition()));
+	else {
+		//Controller
+		mainPlayer->AddComponent(new MoveControllerComponent(mainPlayer->GetTransform()->GetPosition()));
 
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, dae::ControllerButton::ButtonA, id }, std::make_unique<Shoot>(mainPlayer->GetComponent<ShootComponent>()));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, dae::ControllerButton::ButtonA, id }, std::make_unique<Shoot>(mainPlayer->GetComponent<ShootComponent>()));
 
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadLeft, id }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(-300.f, 0.0f, 0.0f)));
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadRight, id }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(300.f, 0.0f, 0.0f)));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadLeft, id }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(-600.f, 0.0f, 0.0f)));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED,dae::ControllerButton::DpadRight, id }, std::make_unique<MoveController>(mainPlayer->GetComponent<MoveControllerComponent>(), glm::vec3(600.f, 0.0f, 0.0f)));
 
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadLeft, id }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadRight, id }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadLeft, id }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
+		Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadRight, id }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
+	}
 	
 }
 
@@ -407,7 +475,13 @@ void MakeMainMenu(dae::Scene* scene) {
 	highScore->AddComponent(new TextObjectComponent("HI-SCORE", font));
 	highScore->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
 	highScore->GetComponent<TextObjectComponent>()->SetName("Debug");
-	highScoreScore->AddComponent(new TextObjectComponent("30000", font));
+
+	FileReader* file{ new FileReader("../Data/highscore.txt") };
+	auto str{ file->ReadGameDataFile() };
+	auto data{ file->ParseDataSimple(str, '+') };
+	auto score{ data["Highscore"] };
+	std::string scoreStr{ std::any_cast<std::string>(score) };
+	highScoreScore->AddComponent(new TextObjectComponent(scoreStr, font));
 	highScore->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - Margin * 3, Margin);
 	highScoreScore->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - SubMargin, SubMargin);
 
@@ -440,14 +514,13 @@ void MakeMainMenu(dae::Scene* scene) {
 
 	//game mode selector
 	std::shared_ptr<GameObject> selector = std::make_shared<dae::GameObject>();
+	selector->SetName("Selector");
 	scene->Add(selector);
 	container->AddChild(selector.get());
 	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusStage, &CreateScore));
 	selector->AddComponent(new TextObjectComponent(">", font));
 	selector->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - SubMargin * 2, WindowSizeY / 2);
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_UP, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), true));
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_DOWN, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), false));
-	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_SPACE, 0 }, std::make_unique<StartGame>(selector->GetComponent<ModeSelector>(), container.get()));
+	CreateSelectorInput(scene);
 
 	//credits
 	std::shared_ptr<GameObject> credit = std::make_shared<dae::GameObject>();

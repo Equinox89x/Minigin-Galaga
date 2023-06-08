@@ -57,7 +57,7 @@ namespace dae{
 			for (auto& enemy : enemies) {
 				enemy->MarkForDestroy();
 			}
-			m_pScene->GetGameObject("Player0")->GetComponent<ValuesComponent>()->Reset();
+			//m_pScene->GetGameObject("Player0")->GetComponent<ValuesComponent>()->Reset();
 			auto children{ m_pScene->GetGameObject("ScoreBoard")->GetChildren("Life") };
 			for (size_t i = 0; i < 3; i++)
 			{

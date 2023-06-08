@@ -30,12 +30,29 @@ void EnemyComponent::Initialize()
 	glm::vec2 P41{ 720-P4.x, p4conv };
 	glm::vec2 P51{ 720-P5.x, p5conv };
 	glm::vec2 P61{ EndPosition.x, EndPosition.y };
-	std::vector<glm::vec2> vec2{ P01, P11, P21, P31, P41, P51, P61 };
+	std::vector<glm::vec2> vec2{ P01, P11, P21, P31, P41, P51, P61 };	
+	
+	auto p02conv{ (WindowSizeY - 300) };
+	auto p12conv{ (WindowSizeY - 569) };
+	auto p22conv{ (WindowSizeY + 115) };
+	glm::vec2 P02{ 0 , p02conv };
+	glm::vec2 P12{ 862, p12conv };
+	glm::vec2 P22{ 143 , p22conv };
+	glm::vec2 P32{ EndPosition.x, EndPosition.y };
+	std::vector<glm::vec2> vec3{ P02, P12, P22, P32 };	
+	
+	glm::vec2 P03{ 720 - P02.x, p02conv };
+	glm::vec2 P13{ 720 - P12.x, p12conv };
+	glm::vec2 P23{ 720 - P22.x, p22conv };
+	glm::vec2 P33{ EndPosition.x, EndPosition.y };
+	std::vector<glm::vec2> vec4{ P03, P13, P23, P33 };
 
 	Paths.push_back(vec1);
-	Paths.push_back(vec2);
+	Paths.push_back(vec2);	
+	Paths.push_back(vec3);
+	Paths.push_back(vec4);
 
-	RandomPath = std::rand() % static_cast<int>(Paths.size());
+	//RandomPath = std::rand() % static_cast<int>(Paths.size());
 }
 
 void EnemyComponent::Update()
@@ -106,10 +123,9 @@ void EnemyComponent::Update()
 	else {
 		TimeBeforeStart -= deltaTime;
 		if (TimeBeforeStart <= 0) {
-			StartTime += deltaTime;
+			StartTime += deltaTime*1.5f;
 			if (StartTime <= 1) {
-				int randomNumber{ std::rand() % static_cast<int>(Paths.size()) };
-				glm::vec2 point{ GalagaMath::CalculateBezierPoint(StartTime, Paths[randomNumber]) };
+				glm::vec2 point{ GalagaMath::CalculateBezierPoint(StartTime, Paths[PathNr]) };
 				GetGameObject()->GetTransform()->Translate(point);
 
 				//glm::vec2 nextBezierPoint = GalagaMath::CalculateBezierPoint(StartTime + 0.01f, Paths[0]);
@@ -133,4 +149,9 @@ void EnemyComponent::DestroyEnemy()
 {
 	GetGameObject()->EnableCollision(false);
 	CanDie = true;
+}
+
+void EnemyComponent::TranslateInitialPosition(glm::vec2 addedPos)
+{
+	EndPosition += addedPos;
 }

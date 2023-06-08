@@ -1,4 +1,10 @@
 game:Galaga+
+Stage 1 Enemies: 22
++
+Stage 2 Enemies: 28
++
+Stage 3 Enemies: 50
++
 size:{
   cellsize:20-
   gridsize:
@@ -24,7 +30,7 @@ Test:
   space|space|space|space|space|player|space|space|space|space|space|space
 +
 Stage 1:
-  space|space|space|space|boss|boss|boss|space|space|space|space|space,
+  space|space|space|space|boss|space|boss|space|space|space|space|space,
   space|space|space|goei|goei|space|space|goei|goei|space|space|space,
   space|space|space|goei|goei|space|space|goei|goei|space|space|space,
   space|space|zako|zako|zako|space|space|zako|zako|zako|space|space,

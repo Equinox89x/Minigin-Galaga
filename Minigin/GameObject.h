@@ -6,6 +6,7 @@
 #include <glm/ext/vector_float3.hpp>
 
 #define WindowSizeX 720
+#define GameWindowSizeX WindowSizeX-140
 #define WindowSizeY 720
 #define Margin 40.f
 #define SubMargin Margin * 2

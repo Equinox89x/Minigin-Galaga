@@ -96,7 +96,7 @@ void Scene::Render() const
 	}
 }
 
-std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToOverlap, std::string id, bool sourceHasDimensions, bool targetsHaveDimensions)
+std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToOverlap, std::string id, std::string holderName, bool sourceHasDimensions, bool targetsHaveDimensions)
 {
 	SDL_Rect rect{};
 	if (sourceHasDimensions) {
@@ -108,19 +108,39 @@ std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToO
 	}
 
 	std::vector<dae::GameObject*> children;
-	for (auto obj : GetGameObjects(id)) {
-		if (!obj->IsCollisionEnabled()) continue;
-		auto overlapPos{ obj->GetTransform()->GetPosition() };
-		SDL_Rect overlapRect;
-		if (targetsHaveDimensions) {
-			overlapRect = obj->GetComponent<TextureComponent>()->GetRect();
-		}
-		else {
-			overlapRect = { static_cast<int>(overlapPos.x), static_cast<int>(overlapPos.y) ,1,1 };
-		}
 
-		if (GalagaMath::IsOverlapping(overlapRect, rect)) {
-			children.push_back(obj.get());
+	if (holderName != "") {
+		for (auto obj : GetGameObject(holderName)->GetChildren(id)) {
+			if (!obj->IsCollisionEnabled()) continue;
+			auto overlapPos{ obj->GetTransform()->GetPosition() };
+			SDL_Rect overlapRect;
+			if (targetsHaveDimensions) {
+				overlapRect = obj->GetComponent<TextureComponent>()->GetRect();
+			}
+			else {
+				overlapRect = { static_cast<int>(overlapPos.x), static_cast<int>(overlapPos.y) ,1,1 };
+			}
+
+			if (GalagaMath::IsOverlapping(overlapRect, rect)) {
+				children.push_back(obj);
+			}
+		}
+	}
+	else {
+		for (auto obj : GetGameObjects(id)) {
+			if (!obj->IsCollisionEnabled()) continue;
+			auto overlapPos{ obj->GetTransform()->GetPosition() };
+			SDL_Rect overlapRect;
+			if (targetsHaveDimensions) {
+				overlapRect = obj->GetComponent<TextureComponent>()->GetRect();
+			}
+			else {
+				overlapRect = { static_cast<int>(overlapPos.x), static_cast<int>(overlapPos.y) ,1,1 };
+			}
+
+			if (GalagaMath::IsOverlapping(overlapRect, rect)) {
+				children.push_back(obj.get());
+			}
 		}
 	}
 	return children;

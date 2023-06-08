@@ -41,6 +41,7 @@ namespace dae
 
 		void Reset();
 
+		void GameEnd();
 
 
 	private:

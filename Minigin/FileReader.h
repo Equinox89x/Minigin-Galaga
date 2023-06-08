@@ -28,14 +28,18 @@ namespace dae {
 		virtual void FixedUpdate() override;
 		void Render() const override;
 
-		void ReadFile();
-		std::string ReadJsonFile();
-		std::map<std::string, std::any> ParseJson(std::string contents, char seperator);
-		void ExtractLevel(std::string levelName);
-		void WriteToBinary();
-		void WriteToObj();
+		std::string ReadGameDataFile();
+		std::map<std::string, std::any> ParseData(std::string contents, char seperator);
+		std::map<std::string, std::any> ParseDataSimple(std::string contents, char seperator);
+
+		void WriteData(std::string dataKey, std::string data);
+
 		void Open();
 		void Close();
+
+		//void ReadFile();
+	/*	void WriteToBinary();
+		void WriteToObj();*/
 
 	private:
 		std::ifstream m_File;
@@ -53,6 +57,7 @@ namespace dae {
 
 		std::map<std::string, std::any> ObjectList{};
 
-		void StoreValue(std::vector<std::string>& stringArray, std::vector<std::vector<float>>& outFloat, std::string attribute);
+		//void StoreValue(std::vector<std::string>& stringArray, std::vector<std::vector<float>>& outFloat, std::string attribute);
+		void ExtractLevel(std::string levelName);
 	};
 }

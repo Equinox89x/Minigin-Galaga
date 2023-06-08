@@ -6,6 +6,7 @@
 #include <ValuesComponent.h>
 #include "PlayerComponent.h"
 #include "Callback.h"
+#include "EnemyManager.h"
 
 
 void ShootComponent::Shoot()
@@ -16,7 +17,7 @@ void ShootComponent::Shoot()
 		auto bullet{ std::make_shared<GameObject>()};
 		bullet->AddComponent(new TextureComponent());
 		bullet->GetComponent<TextureComponent>()->SetTexture("bulletPlayer.png");
-		bullet->GetComponent<TextureComponent>()->Scale(5, 5);
+		bullet->GetComponent<TextureComponent>()->Scale(3, 3);
 		bullet->SetName("bullet"+ StrId);
 
 		auto pos {GetGameObject()->GetTransform()->GetPosition() };
@@ -54,7 +55,7 @@ void ShootComponent::Update()
 			bullet->GetTransform()->Translate(pos.x, newPos, 0);
 		}
 
-		auto enemies{ m_Scene->GetOverlappingObjects(bullet.get(), "Enemy", true)};
+		auto enemies{ m_Scene->GetOverlappingObjects(bullet.get(), "Enemy", "EnemyHolder", true)};
 		for (auto enemy : enemies) {
  			if (auto comp{ enemy->GetComponent<EnemyComponent>() }) {
 				enemy->GetComponent<TextureComponent>("Enemy")->SetTexture("explosion.png", 0.1f, 4);
@@ -65,13 +66,12 @@ void ShootComponent::Update()
 				bullet->MarkForDestroy();
 				GetGameObject()->GetComponent<ValuesComponent>()->IncreaseScore(comp->GetScore());
 				GetGameObject()->GetComponent<ValuesComponent>()->IncreaseHits();
+
+ 				m_Scene->GetGameObject("EnemyHolder")->GetComponent<EnemyManager>()->CheckStatus();
 				break;
 			}
 		}
 	}
-
-	if (m_Scene->GetGameObjects("Enemy").empty()) 
-		m_pCallback->Notify(GetGameObject(), Event::StageCleared);
 }
 
 void ShootComponent::Render() const

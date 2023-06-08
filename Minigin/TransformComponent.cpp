@@ -23,6 +23,9 @@ void dae::TransformComponent::UpdateTransforms()
 		m_Rotation += m_WorldRotation;
 		m_Position += m_WorldPosition;
 	}
+	for (auto child : GetGameObject()->GetChildren()) {
+		child->GetTransform()->UpdateTransforms();
+	}
 
 
 	//// Define the rotation angle in radians

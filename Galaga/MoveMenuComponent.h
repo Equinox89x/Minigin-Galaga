@@ -17,6 +17,8 @@ namespace dae
 		MoveMenuComponent& operator=(const MoveMenuComponent&) = delete;
 		MoveMenuComponent& operator=(MoveMenuComponent&&) noexcept = delete;
 
+		void Reset();
+
 	private:
 		bool m_CanMove{ true };
 		float m_MoveSpeed{ 1 };

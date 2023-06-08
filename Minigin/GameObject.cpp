@@ -30,6 +30,14 @@ void dae::GameObject::Initialize()
 
 void dae::GameObject::Update(){
 	if (!m_IsHidden) {
+		for (size_t i = 0; i < m_pChildren.size(); i++)
+		{
+			if (m_pChildren[i]->IsMarkedForDestroy()) {
+				RemoveChild(m_pChildren[i]);
+				break;
+			}
+		}
+
 		for (Component* comp : m_pComponents) {
 			comp->Update();
 		}

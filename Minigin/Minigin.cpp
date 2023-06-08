@@ -93,6 +93,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	auto input = InputManager(0);
 	auto input2 = InputManager(1);
+	auto input3 = InputManager(2);
 
 	m_Running = true;
 	bool isFirstTime{ true };
@@ -105,6 +106,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		//doContinue = input.ProcessInput();
 		input.HandleInput();
 		input2.HandleInput();
+		input3.HandleInput();
 
 		if (isFirstTime) {
 			sceneManager.Initialize();
