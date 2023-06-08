@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "Callback.h"
 #include "Scene.h"
 
 namespace dae
@@ -10,7 +9,7 @@ namespace dae
 	{
 
 	public:
-		ValuesComponent(Scene* scene) : m_pCallback{}, m_Scene{scene} {};
+		ValuesComponent(Scene* scene) : m_Scene{scene} {};
 		~ValuesComponent() override;
 		ValuesComponent(const ValuesComponent&) = delete;
 		ValuesComponent(ValuesComponent&&) noexcept = delete;
@@ -25,9 +24,11 @@ namespace dae
 		//Getter
 		int GetLives() const;
 		int GetScores() const;
+		int GetShotsFired() { return NrOfShotsFired; };
+		int GetNumberOfHits() { return NrOfHits; };
+		int GetMissRatio();
 
 		//Setter
-		void SetCallback(Callback* const subject);
 		void SetLives(int lives);
 		void SetName(std::string name) { m_ComponentName = name; };
 
@@ -35,16 +36,20 @@ namespace dae
 		void Damage();
 		void IncreaseScore(int score);
 		void ResetObserver();
+		void IncreaseHits() { NrOfHits++; };
+		void IncreaseShots() { NrOfShotsFired++; };
 
 		void Reset();
+
+
 
 	private:
 		int m_Lives{ 3 };
 		int m_Score{ 0 };
 		std::string m_ComponentName;
 
-		Callback* m_pCallback;
 		Scene* m_Scene;
+		int NrOfShotsFired{ 0 }, NrOfHits{ 0 };
 	};
 }
 

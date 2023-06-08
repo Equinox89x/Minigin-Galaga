@@ -59,32 +59,32 @@ void EnemyComponent::Update()
 				IsBeaming = false;
 				CanReturn = true;
 				GetGameObject()->GetComponent<TextureComponent>("Weapon")->SetIsVisible(false);
-				GetGameObject()->GetComponent<TextureComponent>("enemy")->SetPaused(false);
-				GetGameObject()->GetComponent<TextureComponent>("enemy")->SetFrame(1);
+				GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetPaused(false);
+				GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetFrame(1);
 			}
 		}
 
 		if (IsDiving) {
 			float movement{ deltaTime * 450 };
 			if (EnemyType != EnemyType::BOSS) {
-				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY - 60) {
+				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY - 60*2) {
 					CanReturn = true;
 				}
 			}
 			else {
 				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY / 2 && !CanReturn) {
 					GetGameObject()->GetComponent<TextureComponent>("Weapon")->SetIsVisible(true);
-					GetGameObject()->GetComponent<TextureComponent>("enemy")->SetPaused(true);
-					GetGameObject()->GetComponent<TextureComponent>("enemy")->SetFrame(2);
+					GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetPaused(true);
+					GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetFrame(2);
 					IsBeaming = true;
 				}
 			}
 			if (!IsBeaming) GetGameObject()->GetTransform()->AddTranslate(0, CanReturn ? -movement : movement);
 
-			if (GetGameObject()->GetTransform()->GetPosition().y <= InitialPosition.y && CanReturn) {
+			if (GetGameObject()->GetTransform()->GetPosition().y <= EndPosition.y && CanReturn) {
 				IsDiving = false;
 				CanReturn = false;
-				GetGameObject()->GetTransform()->Translate(InitialPosition.x, InitialPosition.y);
+				GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
 			}
 		}
 		else {

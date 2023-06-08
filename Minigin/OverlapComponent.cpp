@@ -1,6 +1,8 @@
 #include "OverlapComponent.h"
 #include "TransformComponent.h"
 #include "TextureComponent.h"
+#include "GalagaMath.h"
+#include "ValuesComponent.h"
 
 std::vector<dae::GameObject*> dae::OverlapComponent::GetOverlappingObjects(bool hasDimensions)
 {
@@ -33,4 +35,9 @@ bool dae::OverlapComponent::IsOverlap(const SDL_Rect& square1, const SDL_Rect& s
 
     // Return true if there is overlap on both axes
     return xOverlap && yOverlap;
+}
+
+void dae::OverlapComponent::Update()
+{
+    
 }

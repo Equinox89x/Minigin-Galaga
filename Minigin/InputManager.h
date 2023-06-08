@@ -14,47 +14,27 @@ namespace dae
 
 	enum class ControllerButton
 	{
-		DpadUp = 0x0001,
-		DpadDown = 0x0002,
-		DpadLeft = 0x0004,
-		DpadRight = 0x0008,
-		Start = 0x0010,
-		Back = 0x0020,
-		LeftThumb = 0x0040,
-		RightThumb = 0x0080,
-		LeftShoulder = 0x0100,
-		RightShoulder = 0x0200,
 		ButtonA = 0x1000,
 		ButtonB = 0x2000,
 		ButtonX = 0x4000,
 		ButtonY = 0x8000,
+		DpadUp = 0x0001,
+		DpadDown = 0x0002,
+		DpadLeft = 0x0004,
+		DpadRight = 0x0008,
+		LeftThumb = 0x0040,
+		RightThumb = 0x0080,
+		LeftShoulder = 0x0100,
+		RightShoulder = 0x0200,
+		Start = 0x0010,
+		Back = 0x0020
 	};
-	
-	//enum class ControllerButton
-	//{
-	//	/*DpadUp = 203,
-	//	DpadDown = 204,
-	//	DpadLeft = 205,
-	//	DpadRight = 206,
-	//	Start = 0x0010,
-	//	Back = 0x0020,
-	//	LeftThumb = 0x0040,
-	//	RightThumb = 0x0080,
-	//	LeftShoulder = 0x0100,
-	//	RightShoulder = 0x0200,
-	//	ButtonA = 0x1000,
-	//	ButtonB = 0x2000,
-	//	ButtonX = 0x4000,
-	//	ButtonY = 0x8000,*/
-	//};
 
 	enum class ButtonStates
 	{
 		BUTTON_DOWN,
 		BUTTON_PRESSED,
-		BUTTON_UP,
-		SCORE_UP,
-		LIVE_DOWN,
+		BUTTON_UP
 	};
 
 	class Input final : public Singleton<Input>
@@ -87,64 +67,44 @@ namespace dae
 		};
 	};
 
-	class InputManagerImpl
-	{
-		XINPUT_STATE m_CurrentState[MAX_PLAYERS];
-		XINPUT_STATE m_PreviousState[MAX_PLAYERS];
-		unsigned int m_ButtonsPressedThisFrame[MAX_PLAYERS];
-		unsigned int m_ButtonsReleasedThisFrame[MAX_PLAYERS];
-
-	public:
-		InputManagerImpl() = default;
-
-		void ProcessInput(int playerId)
-		{
-			int controllerIndex{ playerId };
-			CopyMemory(&m_PreviousState[playerId], &m_CurrentState[playerId], sizeof(XINPUT_STATE));
-			ZeroMemory(&m_CurrentState[playerId], sizeof(XINPUT_STATE));
-			XInputGetState(controllerIndex, &m_CurrentState[playerId]);
-
-
-			auto buttonChanges = m_CurrentState[playerId].Gamepad.wButtons ^ m_PreviousState[playerId].Gamepad.wButtons;
-			m_ButtonsPressedThisFrame[playerId] = buttonChanges & m_CurrentState[playerId].Gamepad.wButtons;
-			m_ButtonsReleasedThisFrame[playerId] = buttonChanges & (~m_CurrentState[playerId].Gamepad.wButtons);
-		}
-
-		bool IsPressed(ControllerButton button, int playerId) const
-		{
-			return m_CurrentState[playerId].Gamepad.wButtons & int(button);
-
-		}
-		bool IsDownThisFrame(ControllerButton button, int playerId) const
-		{
-			return m_ButtonsPressedThisFrame[playerId] & int(button);
-
-		}
-		bool IsUpThisFrame(ControllerButton button, int playerId) const
-		{
-			return m_ButtonsReleasedThisFrame[playerId] & int(button);
-
-		}
-	};
-
 	class InputManager
 	{
-		std::unique_ptr<InputManagerImpl> pImpl{};
+		class InputManagerImpl;
+		InputManagerImpl* pImpl;
 
 	public:
-		InputManager() { pImpl = std::make_unique<InputManagerImpl>(); };
-		~InputManager() { pImpl.release(); };
+		InputManager(int controllerIndex);
+		~InputManager();
 		InputManager(const InputManager& other) = delete;
 		InputManager(InputManager&& other) = delete;
 		InputManager& operator=(const InputManager& other) = delete;
 		InputManager& operator=(InputManager&& other) = delete;
 
-		void ProcessInput();
+		//void ProcessInput();
+		bool IsPressed(ControllerButton button) const;
+		bool IsDownThisFrame(ControllerButton button) const;
+		bool IsUpThisFrame(ControllerButton button) const;
 		void HandleInput();
-
 	private:
-		bool IsPressed(ControllerButton button, int id) const;
-		bool IsDownThisFrame(ControllerButton button, int id) const;
-		bool IsUpThisFrame(ControllerButton button, int id) const;
+
 	};
 }
+
+	//class XController final
+	//{
+	//	class XControllerImpl;
+	//	XControllerImpl* pImpl;
+	//public:
+
+	//	void Update();
+
+	//	bool IsButtonDownThisFrame(ControllerButton button) const;
+	//	bool IsButtonUpThisFrame(ControllerButton button) const;
+	//	bool IsPressed(ControllerButton button) const;
+	//	glm::vec2 GetLeftThumbStick() const;
+	//	glm::vec2 GetRightThumbStick() const;
+
+	//	explicit XController(int controllerIndex);
+	//	~XController();
+	//};
+//};

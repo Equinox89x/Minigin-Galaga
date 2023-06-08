@@ -16,7 +16,7 @@ namespace dae
 		virtual void Execute() = 0; //you can add deltatime here
 	};
 
-	class QuitGame final : public Command
+	/*class QuitGame final : public Command
 	{
 	public:
 		QuitGame(dae::Minigin* pEngine) : m_pObject(pEngine) {}
@@ -28,7 +28,7 @@ namespace dae
 
 	private:
 		dae::Minigin* m_pObject;
-	};
+	};*/
 
 #pragma region Move Keyboard
 	class MoveKeyboard final : public Command

@@ -19,6 +19,8 @@ namespace dae
 		std::vector<GameObject*> GetOverlappingObjects(bool hasDimensions = false);
 		bool IsOverlap(const SDL_Rect& square1, const SDL_Rect& square2);
 
+		void Update() override;
+
 	private:
 		Scene* m_Scene{ nullptr };
 	};

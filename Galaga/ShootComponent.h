@@ -9,7 +9,7 @@ using namespace dae;
 	{
 
 	public:
-		ShootComponent(dae::Scene& scene) : m_Scene{scene} {};
+		ShootComponent(dae::Scene* scene, int id = 0) : m_Scene{ scene }, Id{ id }, StrId{ std::to_string(id) } {};
 		~ShootComponent() = default;
 		ShootComponent(const ShootComponent&) = delete;
 		ShootComponent(ShootComponent&&) noexcept = delete;
@@ -23,7 +23,6 @@ using namespace dae;
 
 		void Shoot();
 
-		float GetMissRatio() { return (NrOfHits / NrOfShotsFired) * 100.f; };
 		//std::vector<GameObject*> GetOverlappingObjects(std::string name, bool sourceHasDimensions = false, bool targetsHaveDimensions = true);
 		//bool IsOverlap(const SDL_Rect& square1, const SDL_Rect& square2);
 
@@ -32,10 +31,11 @@ using namespace dae;
 		//std::list<std::shared_ptr<GameObject>> m_Bullets{};
 		int m_MaxBullets{ 2 };
 		int m_MoveSpeed{ 800 };
-		Scene& m_Scene;
+		Scene* m_Scene;
 		std::shared_ptr<GameObject> Bullets{};
 
-		int NrOfShotsFired{ 0 }, NrOfHits{ 0 };
+		int Id{0};
+		std::string StrId;
 	};
 
 

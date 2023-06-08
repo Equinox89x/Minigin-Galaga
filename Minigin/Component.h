@@ -3,6 +3,7 @@
 
 namespace dae
 {
+	class Callback;
 	class Component
 	{
 	public:
@@ -22,8 +23,11 @@ namespace dae
 		std::string GetName() { return Name; };
 		void SetName(std::string name) { Name = name; };
 
+		void SetCallback(Callback* const subject);
+
 	protected:
 		GameObject* m_pGameObject{};
+		Callback* m_pCallback{};
 
 	private:
 		friend class GameObject;

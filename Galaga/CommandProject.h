@@ -45,5 +45,44 @@ namespace dae{
 		ShootComponent* m_pObject;
 	};
 #pragma endregion
+	
+#pragma region Skipping
+	class Skip final : public Command
+	{
+	public:
+		Skip(std::function<void(Scene*, Stages, float)> createStage, Scene* scene) : CreateStage(createStage), m_pScene{scene} {}
+		void Execute() override
+		{
+			auto enemies{ m_pScene->GetGameObjects("Enemy") };
+			for (auto& enemy : enemies) {
+				enemy->MarkForDestroy();
+			}
+			m_pScene->GetGameObject("Player0")->GetComponent<ValuesComponent>()->Reset();
+			auto children{ m_pScene->GetGameObject("ScoreBoard")->GetChildren("Life") };
+			for (size_t i = 0; i < 3; i++)
+			{
+				children[i]->SetIsHidden(false);
+			}
+
+			if(m_pScene->GetGameObject("Stage 1")){
+				CreateStage(m_pScene, Stages::Stage2, 0.f);
+				m_pScene->GetGameObject("Stage 1")->SetName("Stage 2");
+			}
+			else if (m_pScene->GetGameObject("Stage 2")) {
+				CreateStage(m_pScene, Stages::Stage3, 0.f);
+				m_pScene->GetGameObject("Stage 2")->SetName("Stage 3");
+			}
+			else if (m_pScene->GetGameObject("Stage 3")) {
+				CreateStage(m_pScene, Stages::Stage1, 0.f);
+				m_pScene->GetGameObject("Stage 3")->SetName("Stage 1");
+			}
+		}
+	private:
+		std::function<void(Scene*, Stages, float)> CreateStage;
+		Scene* m_pScene;
+	};
+#pragma endregion
+
+
 };
 

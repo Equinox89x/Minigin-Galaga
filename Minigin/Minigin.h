@@ -1,15 +1,16 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <vector>
 
-	#define WindowSizeX 720
+class InputManager;
+namespace dae
+{
+	/*#define WindowSizeX 720
 	#define WindowSizeY 720
 	#define Margin 40.f
 	#define SubMargin Margin * 2
-	#define Cellsize 48.3f
-
-namespace dae
-{
+	#define Cellsize 48.3f*/
 
 	class Minigin
 	{
@@ -26,7 +27,8 @@ namespace dae
 		void StopRunning();
 
 	private:
-		bool m_Running = false;
+		bool m_Running{ false };
+		//std::vector<InputManager> m_InputManager{ };
 
 	};
 }

@@ -6,7 +6,6 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "Minigin.h"
-#include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -14,6 +13,7 @@
 #include <chrono>
 //#include <steam_api.h>
 #include "Main.h"
+#include "InputManager.h"
 
 SDL_Window* g_window{};
 
@@ -49,7 +49,7 @@ dae::Minigin::Minigin(const std::string &dataPath)
 {
 	PrintSDLVersion();
 	
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
 	{
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
@@ -88,8 +88,12 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
-	//auto& input = InputManager::GetInstance();
-	auto input = InputManager();
+	//auto& input = Input::GetInstance();
+	//auto& input = InputManager();
+
+	auto input = InputManager(0);
+	auto input2 = InputManager(1);
+
 	m_Running = true;
 	bool isFirstTime{ true };
 
@@ -99,9 +103,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		Timer::GetInstance().Update();
 
 		//doContinue = input.ProcessInput();
-		input.ProcessInput();
 		input.HandleInput();
-		//SteamAPI_RunCallbacks();
+		input2.HandleInput();
+
 		if (isFirstTime) {
 			sceneManager.Initialize();
 			isFirstTime = false;

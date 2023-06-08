@@ -22,12 +22,20 @@ void dae::GameObject::Initialize()
 	for (Component* comp : m_pComponents) {
 		comp->Initialize();
 	}
+
+	for (GameObject* child : m_pChildren) {
+		child->Initialize();
+	}
 }
 
 void dae::GameObject::Update(){
 	if (!m_IsHidden) {
 		for (Component* comp : m_pComponents) {
 			comp->Update();
+		}
+
+		for (GameObject* child : m_pChildren) {
+			child->Update();
 		}
 	}
 }
@@ -37,6 +45,10 @@ void dae::GameObject::Render() const
 	if(!m_IsHidden){
 		for (const Component* comp : m_pComponents) {
 			comp->Render();
+		}
+
+		for (GameObject* child : m_pChildren) {
+			child->Render();
 		}
 	}
 }

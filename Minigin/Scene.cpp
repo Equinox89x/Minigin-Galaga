@@ -46,7 +46,7 @@ void Scene::Add(std::shared_ptr<GameObject> object)
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
 {
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+ 	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
 }
 
 void Scene::RemoveAll()
@@ -64,18 +64,28 @@ void dae::Scene::Initialize()
 
 void Scene::Update()
 {
-	for (auto& object : m_objects)
+	for (size_t i = 0; i < m_objects.size(); i++)
+	{
+		if (m_objects[i]->IsMarkedForDestroy()) {
+			Remove(m_objects[i]);
+			i--;
+		}
+	}
+	/*for (auto& object : m_objects)
 	{
 		if (object->IsMarkedForDestroy()) {
 			Remove(object);
 			break;
 		}
-	}
-
-	for(auto& object : m_objects)
+	}*/
+	for (size_t i = 0; i < m_objects.size(); i++)
 	{
-		object->Update();
+		m_objects[i]->Update();
 	}
+	//for(auto& object : m_objects)
+	//{
+	//	object->Update();
+	//}
 }
 
 void Scene::Render() const

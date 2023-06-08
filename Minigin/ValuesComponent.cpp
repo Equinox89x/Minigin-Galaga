@@ -1,8 +1,5 @@
 #include "ValuesComponent.h"
-#include "Timer.h"
-#include "TextureComponent.h"
-#include "../Galaga/EnemyComponent.h"
-#include "GalagaMath.h"
+#include "Callback.h"
 
 dae::ValuesComponent::~ValuesComponent()
 {
@@ -12,19 +9,6 @@ dae::ValuesComponent::~ValuesComponent()
 
 void dae::ValuesComponent::Update()
 {
-	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
-	auto childen{ m_Scene->GetGameObjects("enemy") };
-	auto rect1{ GetGameObject()->GetComponent<TextureComponent>()->GetRect() };
-	for (auto enemy : childen) {
-		auto rect2{ enemy->GetComponent<TextureComponent>("enemy")->GetRect() };
-		if (GalagaMath::IsOverlapping(rect1, rect2)) {
-
-			auto player{ GetGameObject()};
-			player->MarkForDestroy();
-			Damage();
-			break;
-		}
-	}
 }
 
 void dae::ValuesComponent::FixedUpdate()
@@ -39,6 +23,9 @@ void dae::ValuesComponent::Damage()
 {
 	m_Lives--;
 	m_pCallback->Notify(GetGameObject(), Event::Live);
+	if (m_Lives <= 0) {
+		m_pCallback->Notify(GetGameObject(), Event::GameOver);
+	}
 }
 
 void dae::ValuesComponent::IncreaseScore(int score)
@@ -46,11 +33,6 @@ void dae::ValuesComponent::IncreaseScore(int score)
 	m_Score += score;
 	auto go{ GetGameObject() };
 	m_pCallback->Notify(go, Event::Score);	
-}
-
-void dae::ValuesComponent::SetCallback(Callback* const subject)
-{
-	m_pCallback = subject;
 }
 
 int dae::ValuesComponent::GetLives() const
@@ -78,4 +60,13 @@ void dae::ValuesComponent::Reset()
 
 	m_Lives = 3;
 	m_Score = 0;
+	//NrOfHits = 0;
+	//NrOfShotsFired = 0;
+}
+
+int dae::ValuesComponent::GetMissRatio()
+{
+	if (NrOfHits == 0 || NrOfShotsFired == 0) return 0;
+	auto ratio{ (static_cast<float>(NrOfHits) / static_cast<float>(NrOfShotsFired)) * 100.f };
+	return static_cast<int>(ratio);
 }

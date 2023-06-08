@@ -1,8 +1,8 @@
 #pragma once
 #include "Component.h"
-#include <Scene.h>
 #include <glm/ext/vector_float2.hpp>
 #include <GalagaMath.h>
+#include <Scene.h>
 using namespace dae;
 
 namespace dae {
@@ -18,7 +18,7 @@ class EnemyComponent final : public Component
 {
 
 public:
-	EnemyComponent(Scene* scene, EnemyType enemyType, int index, glm::vec2 endPosition, int score, int divingScore = 0) :
+	EnemyComponent(Scene* scene, EnemyType enemyType, int index, float delayTimer, glm::vec2 endPosition, int score, int divingScore = 0) :
 		m_Scene{ scene },
 		EnemyType{ enemyType }, 
 		Score{ score } ,
@@ -26,7 +26,7 @@ public:
 	{
 		DivingScore = divingScore != 0 ? divingScore : Score * 2;
 		Index = index != -1 ? index : 0;
-		TimeBeforeStart += static_cast<float>(Index) / 10;
+		TimeBeforeStart += (static_cast<float>(Index) / 10) + delayTimer;
 	};
 
 	~EnemyComponent() = default;

@@ -5,6 +5,35 @@
 #include <SDL.h>
 #include <glm/ext/vector_float3.hpp>
 
+#define WindowSizeX 720
+#define WindowSizeY 720
+#define Margin 40.f
+#define SubMargin Margin * 2
+#define Cellsize 48.3f
+
+	enum class Names {
+		Player0,
+		Player1,
+		Enemy,
+		Bullet0,
+		Bullet1,
+		ScoreBoard,
+		Score,
+		Bg_back1,
+		Bg_back2,
+		Bg_front1,
+		Bg_front2,
+		MainMenu,
+		EndScreen,
+		Life,
+	};
+
+	enum class Stages {
+		Stage1,
+		Stage2,
+		Stage3,
+	};
+
 namespace dae
 {
 	class Texture2D;

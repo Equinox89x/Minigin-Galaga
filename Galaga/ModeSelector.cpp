@@ -50,6 +50,7 @@ void dae::ModeSelector::StartGame(GameObject* pMenu)
 	default:
 		break;
 	}
+	//m_pScene.Remove(m_pScene.GetGameObject("MainMenu"));
 
 	//TODO 3. stage start sequence
 
