@@ -5,6 +5,7 @@
 #include <Minigin.h>
 #include <TextureComponent.h>
 #include <glm/gtx/rotate_vector.hpp>
+#include "ShootComponent.h"
 
 void EnemyComponent::Initialize()
 {
@@ -69,7 +70,6 @@ void EnemyComponent::Update()
 
 	//if -> game movement, else -> Spawn movement
 	if (!IsStart) {
-
 		if (IsBeaming) {
 			BeamTinmer -= deltaTime;
 			if (BeamTinmer <= 0) {
@@ -83,38 +83,54 @@ void EnemyComponent::Update()
 
 		if (IsDiving) {
 			float movement{ deltaTime * 450 };
+			auto pos{ GetGameObject()->GetTransform()->GetPosition() };
 			if (EnemyType != EnemyType::BOSS) {
-				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY - 60*2) {
+				if (pos.y >= WindowSizeY - 60*2) {
 					CanReturn = true;
 				}
 			}
 			else {
-				if (GetGameObject()->GetTransform()->GetPosition().y >= WindowSizeY / 2 && !CanReturn) {
+				if (pos.y >= WindowSizeY / 2 && !CanReturn) {
 					GetGameObject()->GetComponent<TextureComponent>("Weapon")->SetIsVisible(true);
 					GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetPaused(true);
 					GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetFrame(2);
 					IsBeaming = true;
 				}
 			}
-			if (!IsBeaming) GetGameObject()->GetTransform()->AddTranslate(0, CanReturn ? -movement : movement);
+			if (!IsBeaming) GetGameObject()->GetTransform()->AddTranslate(ManagerMovement.x, CanReturn ? -movement : movement);
 
-			if (GetGameObject()->GetTransform()->GetPosition().y <= EndPosition.y && CanReturn) {
+			pos = GetGameObject()->GetTransform()->GetPosition();
+			if (pos.y <= EndPosition.y && CanReturn) {
 				IsDiving = false;
 				CanReturn = false;
 				GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
 			}
 		}
 		else {
+			//check chance to start a dive/attack/shot
 			DiveTimer -= deltaTime;
 			if (DiveTimer <= 0) {
-				std::random_device rd;
-				std::mt19937 gen(rd());
-				std::uniform_real_distribution<double> dis(0.0, 1.0);
-
-				double chance = dis(gen);
+				
+				std::random_device randomDevice;
+				std::mt19937 generatedNr(randomDevice());
+				std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
+				double chance = distributeVal(generatedNr);
 
 				if (chance <= DesiredChance) {
-					IsDiving = true;
+					if (EnemyType == EnemyType::ZAKO) {
+						std::mt19937 generatedNr2(randomDevice());
+						std::uniform_real_distribution<double> distributeVal2(0.0, 1.0);
+						double chance2 = distributeVal2(generatedNr2);
+						if (chance2 <= 0.5f) {
+							GetGameObject()->GetComponent<ShootComponent>()->Shoot();
+						}
+						else {
+							IsDiving = true;
+						}
+					}
+					else {
+						IsDiving = true;
+					}
 				}
 				DiveTimer = DefaultDiveTimer;
 			}
@@ -124,7 +140,9 @@ void EnemyComponent::Update()
 		TimeBeforeStart -= deltaTime;
 		if (TimeBeforeStart <= 0) {
 			StartTime += deltaTime*1.5f;
-			if (StartTime <= 1) {
+
+			//move along bezier
+			if (StartTime <= 1.f) {
 				glm::vec2 point{ GalagaMath::CalculateBezierPoint(StartTime, Paths[PathNr]) };
 				GetGameObject()->GetTransform()->Translate(point);
 
@@ -135,11 +153,16 @@ void EnemyComponent::Update()
 				//// Print the rotated point
 				//GetGameObject()->GetComponent<TextureComponent>("enemy")->Rotate(rotationAngle);
 
-				SDL_Rect rect1{ static_cast<int>(EndPosition.x), static_cast<int>(EndPosition.y), 2,2 };
-				SDL_Rect rect2{ static_cast<int>(point.x), static_cast<int>(point.y), 2,2 };
-				if (GalagaMath::IsOverlapping(rect1, rect2)) {
-					IsStart = false;
-				}
+			}
+
+			//disable start state when the enemy is near it's estimated location.
+			auto comp{ GetGameObject()->GetComponent<TextureComponent>()};
+			SDL_Rect rect1{ static_cast<int>(EndPosition.x), static_cast<int>(EndPosition.y), 2,2 };
+			SDL_Rect rect2{ static_cast<int>(comp->GetRect().x), static_cast<int>(comp->GetRect().y), comp->GetRect().w/2,comp->GetRect().h/2};
+			if (GalagaMath::IsOverlapping(rect1, rect2)) {
+				comp->SetPosition(EndPosition.x, EndPosition.y);
+				IsStart = false;
+				
 			}
 		}
 	}
@@ -147,8 +170,10 @@ void EnemyComponent::Update()
 
 void EnemyComponent::DestroyEnemy()
 {
-	GetGameObject()->EnableCollision(false);
 	CanDie = true;
+	GetGameObject()->EnableCollision(false);
+	GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetTexture("explosion.png", 0.1f, 4);
+	GetGameObject()->GetComponent<TextureComponent>("Enemy")->SetOffset({ -40, -25 });
 }
 
 void EnemyComponent::TranslateInitialPosition(glm::vec2 addedPos)

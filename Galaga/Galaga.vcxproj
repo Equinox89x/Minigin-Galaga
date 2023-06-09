@@ -192,6 +192,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClInclude Include="Galaga.h" />
     <ClInclude Include="ModeSelector.h" />
     <ClInclude Include="MoveMenuComponent.h" />
+    <ClInclude Include="OpposerComponent.h" />
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShootComponent.h" />
@@ -205,6 +206,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="Galaga.cpp" />
     <ClCompile Include="ModeSelector.cpp" />
     <ClCompile Include="MoveMenuComponent.cpp" />
+    <ClCompile Include="OpposerComponent.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="ShootComponent.cpp" />
   </ItemGroup>

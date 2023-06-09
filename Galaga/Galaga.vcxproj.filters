@@ -60,6 +60,9 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="OpposerComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Galaga.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="OpposerComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

@@ -9,7 +9,14 @@ using namespace dae;
 	{
 
 	public:
-		ShootComponent(dae::Scene* scene, int id = 0) : m_Scene{ scene }, Id{ id }, StrId{ std::to_string(id) } {};
+		ShootComponent(dae::Scene* scene, int id = 0, bool isVersus = false, bool isOpposer = false, bool isEnemy = false) : 
+			m_Scene{ scene },
+			Id{ id },
+			StrId{ std::to_string(id) }, 
+			IsVersus{ isVersus }, 
+			IsOpposer{ isOpposer } ,
+			IsEnemy{ isEnemy }
+		{};
 		~ShootComponent() = default;
 		ShootComponent(const ShootComponent&) = delete;
 		ShootComponent(ShootComponent&&) noexcept = delete;
@@ -19,9 +26,13 @@ using namespace dae;
 		virtual void Initialize() override;
 		virtual void FixedUpdate() override;
 		virtual void Update() override;
+		void HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bullet);
+		void HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bullet);
+		void HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet);
 		virtual void Render() const override;
 
 		void Shoot();
+		void CreateBullet(std::string fileName, std::string name, std::string extention);
 
 		//std::vector<GameObject*> GetOverlappingObjects(std::string name, bool sourceHasDimensions = false, bool targetsHaveDimensions = true);
 		//bool IsOverlap(const SDL_Rect& square1, const SDL_Rect& square2);
@@ -36,6 +47,8 @@ using namespace dae;
 
 		int Id{0};
 		std::string StrId;
+
+		bool IsVersus{ false }, IsOpposer{ false }, IsEnemy{ false };
 	};
 
 

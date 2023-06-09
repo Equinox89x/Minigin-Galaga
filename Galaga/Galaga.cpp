@@ -36,6 +36,7 @@
 #include "EndScreenComponent.h"
 #include "EnemyManager.h"
 #include "Callback.h"
+#include <random>
 
 
 using namespace dae;
@@ -187,7 +188,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	float currentY{ 48.3f };
 
 	float groupDelay{ 0.6f };
-	auto delay{ (0.1f * nrOfEnemies)* (groupDelay*5) };
+	auto delay{ (0.1f * nrOfEnemies)* (groupDelay*6) };
 	//auto delay{ (0.1f * nrOfEnemies) + 2.f };
 	//delay += groupDelay * 6;
 
@@ -200,7 +201,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	//enemy index per type
 	int bossIndex{ 1 };
 	int goeiIndex{ 1 };
-	int zakoIndex{ 1 };
+	int zakoIndex{ 2 };  //2 so the int can never be 0 or 1 because 0 or 1 is the player or secondary player
 
 	//general enemy index
 	int index{ 1 };
@@ -218,6 +219,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::GOEI, index, delayTimer, path, { currentX, currentY }, 50));
+				enemy->GetComponent<EnemyComponent>()->SetLives(1);
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("goei.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
@@ -236,6 +238,8 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::ZAKO, index, delayTimer, path, { currentX, currentY }, 80));
+				enemy->AddComponent(new ShootComponent(scene, zakoIndex, false, false, true));
+				enemy->GetComponent<EnemyComponent>()->SetLives(1);
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("zako.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
@@ -254,8 +258,14 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				GameObject* enemy = new GameObject();
 				enemy->SetName("Enemy");
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::BOSS, index, delayTimer, path, { currentX, currentY }, 150, 400));
+				enemy->GetComponent<EnemyComponent>()->SetLives(2);
 				enemy->AddComponent(new TextureComponent());
-				enemy->GetComponent<TextureComponent>()->SetTexture("boss.png");
+
+				std::random_device randomDevice;
+				std::mt19937 generatedNr(randomDevice());
+				std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
+				double chance = distributeVal(generatedNr);
+				enemy->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
 				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
 				enemy->GetTransform()->Translate(-100, -100);
@@ -298,7 +308,49 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	scene->Add(enemyHolder);
 }
 
-void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
+void MakeVersusGalaga(dae::Scene* scene) {
+	std::shared_ptr<GameObject> opposer = std::make_shared<GameObject>();
+	opposer->SetName("Opposer");
+	opposer->AddComponent(new TextureComponent());
+	opposer->AddComponent(new OpposerComponent(scene, 2));
+	opposer->AddComponent(new ShootComponent(scene, 1, true, true, false));
+
+	Callback* callback = new Callback();
+	callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
+	opposer->GetComponent<OpposerComponent>()->SetCallback(callback);
+
+	std::random_device randomDevice;
+	std::mt19937 generatedNr(randomDevice());
+	std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
+	double chance = distributeVal(generatedNr);
+	opposer->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
+	opposer->GetComponent<TextureComponent>()->SetName("Opposer");
+	opposer->GetComponent<TextureComponent>("Opposer")->Scale(3, 3);
+	//opposer->GetTransform()->Translate(WindowSizeX/2, 60);
+	opposer->GetComponent<TextureComponent>("Opposer")->SetNrOfFrames(2);
+	opposer->GetComponent<TextureComponent>("Opposer")->GetRect();
+	opposer->GetComponent<TextureComponent>("Opposer")->SetPosition(WindowSizeX / 2 - Margin, Margin*2);
+
+	auto comp{ new TextureComponent() };
+	opposer->AddComponent(comp);
+	comp->SetName("Weapon");
+	comp->SetTexture("beam.png");
+	comp->Scale(3, 3);
+	comp->SetNrOfFrames(3);
+	comp->GetRect();
+	comp->SetIsVisible(false);
+	comp->SetOffset({ -76,50 });
+	comp->GetRect();
+	scene->Add(opposer);
+
+	opposer->AddComponent(new MoveControllerComponent(opposer->GetTransform()->GetPosition()));
+
+	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, dae::ControllerButton::ButtonA, 0 }, std::make_unique<Shoot>(opposer->GetComponent<ShootComponent>()));
+
+	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, dae::ControllerButton::ButtonX, 0 }, std::make_unique<ExecuteBeam>(opposer->GetComponent<OpposerComponent>()));
+}
+
+void MakeGalaga(dae::Scene* scene, std::string textureName, int id, bool isVersus) {
 	auto playerName{ "Player" + std::to_string(id) };
 
 	//Main Player
@@ -308,25 +360,28 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
 
 	//Texture
 	mainPlayer->AddComponent(new TextureComponent());
+	mainPlayer->GetComponent<TextureComponent>()->SetName(playerName);
 	mainPlayer->GetComponent<TextureComponent>()->SetTexture(textureName);
 	mainPlayer->GetComponent<TextureComponent>()->Scale(0.7f, 0.7f);
-	mainPlayer->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - Margin, WindowSizeY - SubMargin * 2);
+	mainPlayer->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - Margin+40, WindowSizeY - Margin*3);
+	mainPlayer->GetComponent<TextureComponent>()->SetOffset({ -40, -25 });
 
 	//UI
 	mainPlayer->AddComponent(new ValuesComponent(scene));
 	mainPlayer->GetComponent<ValuesComponent>()->SetLives(3);
 
 	//bullets
-	mainPlayer->AddComponent(new ShootComponent(scene, id));
+	mainPlayer->AddComponent(new ShootComponent(scene, id, isVersus));
 	mainPlayer->AddComponent(new PlayerComponent(scene));
 
 	//callback
 	Callback* callback = new Callback();
-	auto scoregocontainer{ scene->GetGameObject("ScoreBoard") };
-	auto scorego{ scoregocontainer->GetChild("Score") };
-	auto lifes{ scoregocontainer->GetChildren("Life") };
-	callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
-	callback->AddObserver(new HealthObserver(lifes, scene));
+	if (auto scoregocontainer{ scene->GetGameObject("ScoreBoard") }) {
+		auto scorego{ scoregocontainer->GetChild("Score") };
+		auto lifes{ scoregocontainer->GetChildren("Life") };
+		callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
+		callback->AddObserver(new HealthObserver(lifes, scene));
+	}
 	callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
 	mainPlayer->GetComponent<ValuesComponent>()->SetCallback(callback);
 
@@ -367,12 +422,12 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id) {
 	
 }
 
-void MakeMainGalaga(dae::Scene* scene) {
-	MakeGalaga(scene, "galaga.png", 0);
+void MakeMainGalaga(dae::Scene* scene, bool isVersus) {
+	MakeGalaga(scene, "galaga.png", 0, isVersus);
 }
 
 void MakeSecondGalaga(dae::Scene* scene) {
-	MakeGalaga(scene, "galagaRed.png", 1);
+	MakeGalaga(scene, "galagaRed.png", 1, false);
 }
 
 void MakeStage(dae::Scene* scene) {
@@ -517,7 +572,7 @@ void MakeMainMenu(dae::Scene* scene) {
 	selector->SetName("Selector");
 	scene->Add(selector);
 	container->AddChild(selector.get());
-	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusStage, &CreateScore));
+	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusGalaga, &CreateScore));
 	selector->AddComponent(new TextObjectComponent(">", font));
 	selector->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - SubMargin * 2, WindowSizeY / 2);
 	CreateSelectorInput(scene);

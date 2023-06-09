@@ -48,16 +48,22 @@ public:
 
 	void TranslateInitialPosition(glm::vec2 addedPos);
 
+	int GetLives() { return Lives; };
+	void Damage() { Lives--; };
+	void SetLives(int lives) { Lives = lives; };
+	void SetManagerMovement(glm::vec2 movement) { ManagerMovement = movement; };
+
+
 private:
 	Scene* m_Scene;
 
 	EnemyType EnemyType{};
 	bool CanDie{ false };
-	float DeathTimer{ .4f }, DefaultDiveTimer{ 5 }, DiveTimer{ DefaultDiveTimer };
+	float DeathTimer{ .4f }, DefaultDiveTimer{ 4 }, DiveTimer{ DefaultDiveTimer };
 	bool IsDiving{ false }, CanReturn{ false };
 	int Score, DivingScore;
 	glm::vec3 InitialPosition;
-	float DesiredChance{ 0.2f };
+	float DesiredChance{ 0.4f };
 
 	bool IsBeaming{ false };
 	float BeamTinmer{ 5.f };
@@ -69,5 +75,8 @@ private:
 
 	std::vector<std::vector<glm::vec2>> Paths;
 	int PathNr{ 0 };
+
+	int Lives{ 1 };
+	glm::vec2 ManagerMovement{ 0 };
 };
 

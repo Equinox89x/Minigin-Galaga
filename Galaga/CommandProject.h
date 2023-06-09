@@ -2,6 +2,7 @@
 #include "Command.h"
 #include "ModeSelector.h"
 #include "ShootComponent.h"
+#include "OpposerComponent.h"
 
 namespace dae{
 #pragma region Menu
@@ -43,6 +44,20 @@ namespace dae{
 		}
 	private:
 		ShootComponent* m_pObject;
+	};
+#pragma endregion
+
+#pragma region player
+	class ExecuteBeam final : public Command
+	{
+	public:
+		ExecuteBeam(OpposerComponent* const object) : m_pObject(object) {}
+		void Execute() override
+		{
+			m_pObject->ExecuteBeam();
+		}
+	private:
+		OpposerComponent* m_pObject;
 	};
 #pragma endregion
 	

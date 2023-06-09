@@ -48,6 +48,7 @@ void dae::GameOverObserver::Notify(GameObject* /*go*/, Event event)
 	auto player1{ m_Scene->GetGameObject("Player1") };
 	auto scoreboard{ m_Scene->GetGameObject("ScoreBoard") };
 	auto enemies{ m_Scene->GetGameObject("EnemyHolder") };
+	auto opposer{ m_Scene->GetGameObject("Opposer") };
 	//auto enemies{ m_Scene->GetGameObjects("Enemy") };
 	switch (event)
 	{
@@ -67,7 +68,10 @@ void dae::GameOverObserver::Notify(GameObject* /*go*/, Event event)
 		/*for (auto& enemy : enemies) {
 			enemy->MarkForDestroy();
 		}*/
-		enemies->MarkForDestroy();
+		if(enemies) 
+			enemies->MarkForDestroy();
+		if(opposer) 
+			opposer->MarkForDestroy();
 
 
 		break;

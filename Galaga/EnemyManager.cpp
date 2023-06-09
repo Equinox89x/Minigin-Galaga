@@ -33,11 +33,13 @@ void EnemyManager::Update()
 	}
 	else {
 		for (auto enemy : children) {
-			if (enemy->GetTransform()->GetPosition().x <= WindowSizeX / 3) {
+			if (enemy->GetTransform()->GetPosition().x <= WindowSizeX / 2.4f) {
+				enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ -movement, 0 });
 				enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ -movement, 0 });
 				enemy->GetTransform()->AddTranslate(-movement, 0);
 			}
 			else {
+				enemy->GetComponent<EnemyComponent>()->SetManagerMovement({movement, 0});
 				enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
 				enemy->GetTransform()->AddTranslate(movement, 0);
 			}
