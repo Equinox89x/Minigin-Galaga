@@ -68,12 +68,12 @@ namespace dae{
 		Skip(std::function<void(Scene*, Stages, float)> createStage, Scene* scene) : CreateStage(createStage), m_pScene{scene} {}
 		void Execute() override
 		{
-			auto enemies{ m_pScene->GetGameObjects("Enemy") };
+			auto enemies{ m_pScene->GetGameObjects(EnumStrings[Enemy]) };
 			for (auto& enemy : enemies) {
 				enemy->MarkForDestroy();
 			}
 			//m_pScene->GetGameObject("Player0")->GetComponent<ValuesComponent>()->Reset();
-			auto children{ m_pScene->GetGameObject("ScoreBoard")->GetChildren("Life") };
+			auto children{ m_pScene->GetGameObject(EnumStrings[ScoreBoard])->GetChildren(EnumStrings[Life]) };
 			for (size_t i = 0; i < 3; i++)
 			{
 				children[i]->SetIsHidden(false);

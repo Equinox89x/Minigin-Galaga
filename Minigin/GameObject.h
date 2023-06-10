@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <map>
 #include <SDL.h>
 #include <glm/ext/vector_float3.hpp>
 
@@ -11,22 +12,43 @@
 #define Margin 40.f
 #define SubMargin Margin * 2
 #define Cellsize 48.3f
+#define GalagaSize 40.f
 
-	enum class Names {
+	const enum Names {
 		Player0,
 		Player1,
+		PlayerGeneral,
 		Enemy,
-		Bullet0,
-		Bullet1,
+		EnemyHolder,
+		BulletGeneral,
+		EnemyBullet,
+		NormalBullet,
 		ScoreBoard,
 		Score,
+		Life,
+		Values,
 		Bg_back1,
 		Bg_back2,
 		Bg_front1,
 		Bg_front2,
 		MainMenu,
 		EndScreen,
-		Life,
+		Selector,
+		Logo,
+		CapturedFighter,
+		Weapon,
+		Opposer,
+		NUM_ENUM_VALUES
+	};
+
+	const std::string EnumStrings[NUM_ENUM_VALUES] = {
+	"MainPlayer0", "MainPlayer1", "MainPlayer",
+	"Enemy", "EnemyHolder",
+	"ullet", "EnemyBullet","Bullet",
+	"ScoreBoard", "Score", "Life", "Values",
+	"Bg_back1", "Bg_back2", "Bg_front1", "Bg_front2",
+	"MainMenu", "EndScreen", "Selector", "Logo",
+	"CapturedGalaga", "Weapon", "Opposer",	
 	};
 
 	enum class Stages {

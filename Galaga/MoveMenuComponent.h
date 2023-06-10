@@ -3,6 +3,7 @@
 #include "Minigin.h"
 #include "TransformComponent.h"
 #include <glm/ext/vector_float3.hpp>
+#include "Scene.h"
 
 namespace dae
 {
@@ -10,7 +11,7 @@ namespace dae
 	{
 
 	public:
-		MoveMenuComponent(float moveSpeed) : m_MoveSpeed{ moveSpeed } {};
+		MoveMenuComponent(float moveSpeed, Scene* scene) : m_MoveSpeed{ moveSpeed }, m_Scene{ scene } {};
 		~MoveMenuComponent() = default;
 		MoveMenuComponent(const MoveMenuComponent&) = delete;
 		MoveMenuComponent(MoveMenuComponent&&) noexcept = delete;
@@ -24,6 +25,7 @@ namespace dae
 		float m_MoveSpeed{ 1 };
 		float m_Angle{ 0 };
 		glm::vec3 m_OriginalPoint{ 0,0,0 };
+		Scene* m_Scene;
 
 		virtual void Initialize() override;
 		virtual void Update() override;

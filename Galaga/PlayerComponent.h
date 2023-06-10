@@ -16,7 +16,9 @@ public:
     virtual void Update() override;
 
     void Die();
+    void Grab();
     bool IsDead() { return HasDied; };
+    bool CanBeGrabbed{ true };
 
 private:
 

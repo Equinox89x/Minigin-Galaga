@@ -5,6 +5,9 @@
 #include "GalagaMath.h"
 #include <random>
 #include "Timer.h"
+#include "EnemyManager.h"
+#include "ShootComponent.h"
+#include "CapturedComponent.h"
 
 void OpposerComponent::Initialize()
 {
@@ -26,83 +29,146 @@ void OpposerComponent::Update()
 		if (IsBeaming) {
 			BeamingTimer -= deltaTime;
 			if (BeamingTimer <= 0) {
-				IsBeaming = false;
-				CanReturn = true;
-				GetGameObject()->GetComponent<TextureComponent>("Weapon")->SetIsVisible(false);
-				GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetPaused(false);
-				GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetFrame(1);
+				ResetBeaming();
 			}
 		}
 
 		if (IsDiving) {
 			float movement{ deltaTime * MaxMoveSpeed };
 			auto pos{ GetGameObject()->GetTransform()->GetPosition() };
-			if (pos.y >= WindowSizeY / 2 && !CanReturn) {
-				GetGameObject()->GetComponent<TextureComponent>("Weapon")->SetIsVisible(true);
-				GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetPaused(true);
-				GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetFrame(2);
-				IsBeaming = true;
-			}
+			HandleBeaming(pos);
 			if (!IsBeaming) { 
 				GetGameObject()->GetTransform()->AddTranslate(0, CanReturn ? -movement : movement);
 			}
 			else {
-				auto player{ m_Scene->GetGameObject("Player0") };
-				if (player) {
-					if (player->IsMarkedForDestroy()) return;
-					auto rect1{ GetGameObject()->GetComponent<TextureComponent>("Weapon")->GetRect() };
-					auto rect2{ player->GetComponent<TextureComponent>()->GetRect() };
-					if (GalagaMath::IsOverlapping(rect1, rect2)) {
-						player->GetComponent<PlayerComponent>()->Die();
-					}
-				}
+				HandleGrabbing();
 			}
 
 			pos = GetGameObject()->GetTransform()->GetPosition();
-			if (pos.y <= EndPosition.y && CanReturn) {
-				IsDiving = false;
-				CanReturn = false;
-				GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
-			}
+			HandleCaptureAndReturn(pos);
 		}
 		else {
-			MoveSpeedChangeTimer -= deltaTime;
-			if (MoveSpeedChangeTimer <= 0) {
-				std::random_device randomDevice;
-
-				std::mt19937 generatedNr(randomDevice());
-				std::uniform_real_distribution<float> distributeVal(MinMoveSpeed, MaxMoveSpeed);
-				MoveSpeed = distributeVal(generatedNr);
-
-				std::mt19937 generatedNr2(randomDevice());
-				std::uniform_real_distribution<float> distributeVal2(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
-				MoveSpeedChangeTimer = distributeVal2(generatedNr2);
-			}
-
-			
-			auto futurePos{ GetGameObject()->GetTransform()->GetPosition() };
-			auto movement{ (deltaTime * MoveSpeed) * MoveModifier };
-
-			IsGoingRight ? MoveModifier = 1 : MoveModifier = -1;
-
-			if (futurePos.x < 0) {
-				IsGoingRight = true;
-			}
-			else if (futurePos.x > GameWindowSizeX-60) {
-				IsGoingRight = false;
-			}
-
-			GetGameObject()->GetTransform()->AddTranslate(movement, 0);
+			HandleRandomMovement(deltaTime);
 		}
 	}
+}
+
+void OpposerComponent::HandleCaptureAndReturn(glm::vec3& pos)
+{
+	if (pos.y <= EndPosition.y && CanReturn) {
+		IsDiving = false;
+		CanReturn = false;
+		GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
+
+		if (ShipCaptured && CurrentCapturedFighter != "") {
+			if (auto fighter{ m_Scene->GetGameObject(CurrentCapturedFighter) }) {
+				fighter->GetComponent<CapturedComponent>()->SetIsTurned(true);
+				fighter->GetComponent<TextureComponent>()->Rotate(180);
+				auto pos2{ fighter->GetTransform()->GetPosition() };
+				fighter->GetTransform()->Translate(pos2.x, 0);
+				ShipCaptured = false;
+			}
+		}
+	}
+}
+
+void OpposerComponent::HandleBeaming(glm::vec3& pos)
+{
+	if (pos.y >= WindowSizeY / 1.8f && !CanReturn) {
+		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Weapon])->SetIsVisible(true);
+		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetPaused(true);
+		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetFrame(2);
+		IsBeaming = true;
+	}
+}
+
+void OpposerComponent::ResetBeaming()
+{
+	IsBeaming = false;
+	CanReturn = true;
+	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Weapon])->SetIsVisible(false);
+	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetPaused(false);
+	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetFrame(1);
+	GetGameObject()->EnableCollision(true);
+}
+
+void OpposerComponent::HandleGrabbing()
+{
+	if (CanGrab) {
+		if (auto player{ m_Scene->GetGameObject(EnumStrings[Player0]) }) {
+			if (player->GetComponent<PlayerComponent>()->CanBeGrabbed) {
+				auto rect1{ GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Weapon])->GetRect() };
+				auto rect2{ player->GetComponent<TextureComponent>()->GetRect() };
+				if (GalagaMath::IsOverlapping(rect1, rect2)) {
+					CaptureFighter(player.get(), GetGameObject());
+					player->GetComponent<PlayerComponent>()->Grab();
+					BeamingTimer = 1;
+					CanGrab = false;
+				}
+			}
+		}
+	}
+}
+
+void OpposerComponent::CaptureFighter(GameObject* player, GameObject* enemy)
+{
+	auto nr{ m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->GetNrOfCapturedFighters() };
+	std::string name{ EnumStrings[CapturedFighter] + std::to_string(nr) };
+	CurrentCapturedFighter = name;
+
+	auto go = std::make_shared<GameObject>();
+	go->SetName(name);
+	go->AddComponent(new ShootComponent(m_Scene, nr + 100, false, false, true));
+
+	//Texture
+	go->AddComponent(new TextureComponent());
+	go->GetComponent<TextureComponent>()->SetName(name);
+	go->GetComponent<TextureComponent>()->SetTexture("galagaRed.png");
+	go->GetComponent<TextureComponent>()->Scale(0.7f, 0.7f);
+
+	go->AddComponent(new CapturedComponent(m_Scene, player, enemy));
+	m_Scene->Add(go);
+	ShipCaptured = true;
+	m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->AcknowledgeFighterCaptured();
+}
+
+void OpposerComponent::HandleRandomMovement(float deltaTime)
+{
+	MoveSpeedChangeTimer -= deltaTime;
+	if (MoveSpeedChangeTimer <= 0) {
+		std::random_device randomDevice;
+
+		std::mt19937 generatedNr(randomDevice());
+		std::uniform_real_distribution<float> distributeVal(MinMoveSpeed, MaxMoveSpeed);
+		MoveSpeed = distributeVal(generatedNr);
+
+		std::mt19937 generatedNr2(randomDevice());
+		std::uniform_real_distribution<float> distributeVal2(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
+		MoveSpeedChangeTimer = distributeVal2(generatedNr2);
+	}
+
+
+	auto futurePos{ GetGameObject()->GetTransform()->GetPosition() };
+	auto movement{ (deltaTime * MoveSpeed) * MoveModifier };
+
+	IsGoingRight ? MoveModifier = 1 : MoveModifier = -1;
+
+	if (futurePos.x < 0) {
+		IsGoingRight = true;
+	}
+	else if (futurePos.x >(GameWindowSizeX)-60) {
+		IsGoingRight = false;
+	}
+
+	GetGameObject()->GetTransform()->AddTranslate(movement, 0);
 }
 
 void OpposerComponent::DestroyOpposer()
 {
 	CanDie = true;
 	GetGameObject()->EnableCollision(false);
-	GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetTexture("explosion.png", 0.1f, 4);
-	GetGameObject()->GetComponent<TextureComponent>("Opposer")->SetOffset({ -40, -25 });
+	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetTexture("explosion.png", 0.1f, 4);
+	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetOffset({ -40, -25 });
 }
 
 void OpposerComponent::ExecuteBeam()

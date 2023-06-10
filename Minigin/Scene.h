@@ -25,10 +25,10 @@ namespace dae
 
 		std::shared_ptr<GameObject> GetGameObject(std::string name);
 
-		std::vector<std::shared_ptr<GameObject>> GetGameObjects(std::string name);
+		std::vector<std::shared_ptr<GameObject>> GetGameObjects(std::string name, bool isCompleteWord = true);
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects();
 
-		std::vector<GameObject*> GetOverlappingObjects(GameObject* objectToOverlap, std::string id = "", std::string holderName = "", bool sourceHasDimensions = false, bool targetsHaveDimensions = true);
+		std::vector<GameObject*> GetOverlappingObjects(GameObject* objectToOverlap, std::string id = "", std::string holderName = "", bool isCompleteWord = true, bool sourceHasDimensions = false, bool targetsHaveDimensions = true);
 		bool IsOverlap(const SDL_Rect& square1, const SDL_Rect& square2);
 
 	private: 

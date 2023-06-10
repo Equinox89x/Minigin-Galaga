@@ -59,13 +59,7 @@ void dae::TextureComponent::HandleAnimation() {
     m_DstRect.w = static_cast<int>(m_SrcRect.w * scale.x);
     m_DstRect.h = static_cast<int>(m_SrcRect.h * scale.y);
 
-    //m_DstRect.x += Offset.x;
-    //m_DstRect.y += Offset.y;
-
-    SDL_Rect rect{ m_DstRect };
-    rect.x -= static_cast<int>(m_DstRect.w/2);
-    rect.y -= static_cast<int>(m_DstRect.h);
-    m_Rect = rect;
+    m_Rect = m_DstRect;
 }
 
 void dae::TextureComponent::Render() const
@@ -74,11 +68,14 @@ void dae::TextureComponent::Render() const
 
     if (NrOfFrames > 1) {
         SDL_Point center = { m_SrcRect.w / 2, m_SrcRect.h / 2 };
-        SDL_RenderCopyEx(Renderer::GetInstance().GetSDLRenderer(), m_pTexture->GetSDLTexture(), &m_SrcRect, &m_DstRect, Angle, &center, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(Renderer::GetInstance().GetSDLRenderer(), m_pTexture->GetSDLTexture(), &m_SrcRect, &m_DstRect, Angle, nullptr, SDL_FLIP_NONE);
     }
     else {
         SDL_RenderCopyEx(Renderer::GetInstance().GetSDLRenderer(), m_pTexture->GetSDLTexture(), nullptr, &m_DstRect, Angle, nullptr, SDL_FLIP_NONE);
     }
+
+    SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255); // Set the color to red
+    SDL_RenderDrawRect(Renderer::GetInstance().GetSDLRenderer(), &m_Rect); // D
 }
 
 void dae::TextureComponent::SetTexture(const std::string& filename, float animSpeed, int nrOfFrames, bool resetAnim)

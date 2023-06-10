@@ -16,14 +16,25 @@ std::shared_ptr<GameObject> Scene::GetGameObject(std::string name) {
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<GameObject>> Scene::GetGameObjects(std::string name)
+std::vector<std::shared_ptr<GameObject>> Scene::GetGameObjects(std::string name, bool isCompleteWord)
 {
 	std::vector<std::shared_ptr<GameObject>> children;
 
 	for (const std::shared_ptr<GameObject>& obj : m_objects)
 	{
-		if (obj && obj->GetName() == name)
-			children.push_back(obj);
+		if (obj) {
+			if (!isCompleteWord) {
+				std::size_t found = obj->GetName().find(name);
+				if (found != std::string::npos) {
+					children.push_back(obj);
+
+				}
+			}
+			else if (obj->GetName() == name) {
+				children.push_back(obj);
+			}
+		}
+	
 	}
 	return children;
 }
@@ -96,7 +107,7 @@ void Scene::Render() const
 	}
 }
 
-std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToOverlap, std::string id, std::string holderName, bool sourceHasDimensions, bool targetsHaveDimensions)
+std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToOverlap, std::string id, std::string holderName, bool isCompleteWord, bool sourceHasDimensions, bool targetsHaveDimensions)
 {
 	SDL_Rect rect{};
 	if (sourceHasDimensions) {
@@ -127,7 +138,7 @@ std::vector<dae::GameObject*> Scene::GetOverlappingObjects(GameObject* objectToO
 		}
 	}
 	else {
-		for (auto obj : GetGameObjects(id)) {
+		for (auto obj : GetGameObjects(id, isCompleteWord)) {
 			if (!obj->IsCollisionEnabled()) continue;
 			auto overlapPos{ obj->GetTransform()->GetPosition() };
 			SDL_Rect overlapRect;

@@ -18,6 +18,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 
+
 	void DestroyOpposer();
 	int GetLives() { return Lives; };
 	void Damage() { Lives--; };
@@ -41,7 +42,15 @@ private:
 
 	glm::vec2 EndPosition;
 
+	bool ShipCaptured{ false }, CanGrab{ true };
+	std::string CurrentCapturedFighter{ "" };
 
+	void CaptureFighter(GameObject* player, GameObject* enemy);
+	void HandleBeaming(glm::vec3& pos);
+	void ResetBeaming();
+	void HandleGrabbing();
+	void HandleRandomMovement(float deltaTime);
+	void HandleCaptureAndReturn(glm::vec3& pos);
 };
 
 

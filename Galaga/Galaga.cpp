@@ -42,7 +42,7 @@
 using namespace dae;
 
 void CreateSelectorInput(dae::Scene* scene) {
-	auto selector{ scene->GetGameObject("Selector") };
+	auto selector{ scene->GetGameObject(EnumStrings[Selector]) };
 	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_UP, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), true));
 	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_DOWN, 0 }, std::make_unique<CycleGameMode>(selector->GetComponent<ModeSelector>(), false));
 	Input::GetInstance().BindKey({ ButtonStates::BUTTON_PRESSED, SDLK_SPACE, 0 }, std::make_unique<StartGame>(selector->GetComponent<ModeSelector>(), selector->GetParent()));
@@ -55,12 +55,12 @@ void CreateEndScreen(dae::Scene* scene) {
 	auto width{ WindowSizeX/2 - 120.f };
 	auto height{ WindowSizeY/2 - 100.f };
 	container->GetTransform()->Translate(width, height);
-	container->SetName("EndScreen");
+	container->SetName(EnumStrings[EndScreen]);
 	container->AddComponent(new EndScreenComponent());
 
 	//callback
 	Callback* callback = new Callback();
-	callback->AddObserver(new ToMenu(scene->GetGameObject("MainMenu").get(), &CreateSelectorInput, scene));
+	callback->AddObserver(new ToMenu(scene->GetGameObject(EnumStrings[MainMenu]).get(), &CreateSelectorInput, scene));
 	container->GetComponent<EndScreenComponent>()->SetCallback(callback);
 
 	GameObject* resultText{ new GameObject() };
@@ -72,7 +72,8 @@ void CreateEndScreen(dae::Scene* scene) {
 	container->AddChild(nrOfHitsText);
 	container->AddChild(hitMissRatioText);
 
-	auto comp{ scene->GetGameObject("Player0")->GetComponent<ValuesComponent>() };
+	//auto comp{ scene->GetGameObject("Player0")->GetComponent<ValuesComponent>() };
+	auto comp{ scene->GetGameObject(EnumStrings[Values])->GetComponent<ValuesComponent>() };
 
 	resultText->AddComponent(new TextObjectComponent("--RESULTS--", font));
 	resultText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
@@ -96,7 +97,7 @@ void CreateEndScreen(dae::Scene* scene) {
 void CreateScore(dae::Scene* scene) {
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 18);
 	std::shared_ptr<GameObject> scoreBoard = std::make_shared<dae::GameObject>();
-	scoreBoard->SetName("ScoreBoard");
+	scoreBoard->SetName(EnumStrings[ScoreBoard]);
 	scoreBoard->GetTransform()->Translate(GameWindowSizeX, 0);
 
 	GameObject* goHighscoreText = new GameObject();
@@ -127,7 +128,7 @@ void CreateScore(dae::Scene* scene) {
 	goUpText->GetComponent<TextObjectComponent>()->SetColor(SDL_Color{ 220,20,60 });
 
 	goUpTextValue->AddComponent(new TextObjectComponent("00", font));
-	goUpTextValue->SetName("Score");
+	goUpTextValue->SetName(EnumStrings[Score]);
 
 	//auto width{ -140 };
 	
@@ -142,7 +143,7 @@ void CreateScore(dae::Scene* scene) {
 	{
 		GameObject* life{ new GameObject() };
 		scoreBoard->AddChild(life);
-		life->SetName("Life");
+		life->SetName(EnumStrings[Life]);
 
 		life->AddComponent(new TextureComponent());
 		life->GetComponent<TextureComponent>()->SetTexture("galaga.png");
@@ -155,9 +156,31 @@ void CreateScore(dae::Scene* scene) {
 
 }
 
+void MakeValues(dae::Scene* scene) {
+	if (scene->GetGameObject(EnumStrings[Values]) == nullptr) {
+		//UI
+		auto go = std::make_shared<GameObject>();
+		go->SetName(EnumStrings[Values]);
+		go->AddComponent(new ValuesComponent(scene));
+		go->GetComponent<ValuesComponent>()->SetLives(3);
+
+		//callback
+		Callback* callback = new Callback();
+		if (auto scoregocontainer{ scene->GetGameObject(EnumStrings[ScoreBoard]) }) {
+			auto scorego{ scoregocontainer->GetChild(EnumStrings[Score]) };
+			auto lifes{ scoregocontainer->GetChildren(EnumStrings[Life]) };
+			callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
+			callback->AddObserver(new HealthObserver(lifes, scene));
+		}
+		callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
+		go->GetComponent<ValuesComponent>()->SetCallback(callback);
+		scene->Add(go);
+	}
+}
+
 void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	std::shared_ptr<GameObject> enemyHolder = std::make_shared<dae::GameObject>();
-	enemyHolder->SetName("EnemyHolder");
+	enemyHolder->SetName(EnumStrings[EnemyHolder]);
 
 	FileReader* file{ new FileReader("../Data/galagamap.txt") };
 	auto str{ file->ReadGameDataFile() };
@@ -188,7 +211,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	float currentY{ 48.3f };
 
 	float groupDelay{ 0.6f };
-	auto delay{ (0.1f * nrOfEnemies)* (groupDelay*6) };
+	auto delay{ ((0.1f * nrOfEnemies) * (groupDelay * 5)) + delayTimer };
 	//auto delay{ (0.1f * nrOfEnemies) + 2.f };
 	//delay += groupDelay * 6;
 
@@ -217,12 +240,12 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 			if (tile == "goei") {
 				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				GameObject* enemy = new GameObject();
-				enemy->SetName("Enemy");
+				enemy->SetName(EnumStrings[Enemy]);
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::GOEI, index, delayTimer, path, { currentX, currentY }, 50));
 				enemy->GetComponent<EnemyComponent>()->SetLives(1);
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("goei.png");
-				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
+				enemy->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
 				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
@@ -236,13 +259,13 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 			else if (tile == "zako") {
 				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				GameObject* enemy = new GameObject();
-				enemy->SetName("Enemy");
+				enemy->SetName(EnumStrings[Enemy]);
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::ZAKO, index, delayTimer, path, { currentX, currentY }, 80));
 				enemy->AddComponent(new ShootComponent(scene, zakoIndex, false, false, true));
 				enemy->GetComponent<EnemyComponent>()->SetLives(1);
 				enemy->AddComponent(new TextureComponent());
 				enemy->GetComponent<TextureComponent>()->SetTexture("zako.png");
-				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
+				enemy->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
 				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
@@ -256,7 +279,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 			else if (tile == "boss") {
 				//std::shared_ptr<GameObject> enemy = std::make_shared<dae::GameObject>();
 				GameObject* enemy = new GameObject();
-				enemy->SetName("Enemy");
+				enemy->SetName(EnumStrings[Enemy]);
 				enemy->AddComponent(new EnemyComponent(scene, EnemyType::BOSS, index, delayTimer, path, { currentX, currentY }, 150, 400));
 				enemy->GetComponent<EnemyComponent>()->SetLives(2);
 				enemy->AddComponent(new TextureComponent());
@@ -266,7 +289,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
 				double chance = distributeVal(generatedNr);
 				enemy->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
-				enemy->GetComponent<TextureComponent>()->SetName("Enemy");
+				enemy->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
 				enemy->GetTransform()->Translate(-100, -100);
 				enemy->GetComponent<TextureComponent>()->SetNrOfFrames(2);
@@ -274,7 +297,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 
 				auto comp{ new TextureComponent() };
 				enemy->AddComponent(comp);
-				comp->SetName("Weapon");
+				comp->SetName(EnumStrings[Weapon]);
 				comp->SetTexture("beam.png");
 				comp->Scale(3, 3);
 				comp->SetNrOfFrames(3);
@@ -306,11 +329,21 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 	go->SetName(name);
 	scene->Add(go);
 	scene->Add(enemyHolder);
+
+	//MakeValues(scene);
 }
 
+//TODO
+//Player still needs to die on overlap from tractor beam on both versus and single/coop mode
+
 void MakeVersusGalaga(dae::Scene* scene) {
+	std::shared_ptr<GameObject> enemyHolder = std::make_shared<dae::GameObject>();
+	enemyHolder->SetName(EnumStrings[EnemyHolder]);
+	enemyHolder->AddComponent(new EnemyManager(scene, 0, true));
+	scene->Add(enemyHolder);
+
 	std::shared_ptr<GameObject> opposer = std::make_shared<GameObject>();
-	opposer->SetName("Opposer");
+	opposer->SetName(EnumStrings[Opposer]);
 	opposer->AddComponent(new TextureComponent());
 	opposer->AddComponent(new OpposerComponent(scene, 2));
 	opposer->AddComponent(new ShootComponent(scene, 1, true, true, false));
@@ -324,16 +357,16 @@ void MakeVersusGalaga(dae::Scene* scene) {
 	std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
 	double chance = distributeVal(generatedNr);
 	opposer->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
-	opposer->GetComponent<TextureComponent>()->SetName("Opposer");
-	opposer->GetComponent<TextureComponent>("Opposer")->Scale(3, 3);
+	opposer->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
+	opposer->GetComponent<TextureComponent>(EnumStrings[Enemy])->Scale(3, 3);
 	//opposer->GetTransform()->Translate(WindowSizeX/2, 60);
-	opposer->GetComponent<TextureComponent>("Opposer")->SetNrOfFrames(2);
-	opposer->GetComponent<TextureComponent>("Opposer")->GetRect();
-	opposer->GetComponent<TextureComponent>("Opposer")->SetPosition(WindowSizeX / 2 - Margin, Margin*2);
+	opposer->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetNrOfFrames(2);
+	opposer->GetComponent<TextureComponent>(EnumStrings[Enemy])->GetRect();
+	opposer->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetPosition((GameWindowSizeX) / 2 - Margin, Margin*2);
 
 	auto comp{ new TextureComponent() };
 	opposer->AddComponent(comp);
-	comp->SetName("Weapon");
+	comp->SetName(EnumStrings[Weapon]);
 	comp->SetTexture("beam.png");
 	comp->Scale(3, 3);
 	comp->SetNrOfFrames(3);
@@ -351,7 +384,7 @@ void MakeVersusGalaga(dae::Scene* scene) {
 }
 
 void MakeGalaga(dae::Scene* scene, std::string textureName, int id, bool isVersus) {
-	auto playerName{ "Player" + std::to_string(id) };
+	auto playerName{ EnumStrings[PlayerGeneral] + std::to_string(id) };
 
 	//Main Player
 	std::shared_ptr<GameObject> mainPlayer = std::make_shared<dae::GameObject>();
@@ -363,27 +396,11 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id, bool isVersu
 	mainPlayer->GetComponent<TextureComponent>()->SetName(playerName);
 	mainPlayer->GetComponent<TextureComponent>()->SetTexture(textureName);
 	mainPlayer->GetComponent<TextureComponent>()->Scale(0.7f, 0.7f);
-	mainPlayer->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - Margin+40, WindowSizeY - Margin*3);
-	mainPlayer->GetComponent<TextureComponent>()->SetOffset({ -40, -25 });
-
-	//UI
-	mainPlayer->AddComponent(new ValuesComponent(scene));
-	mainPlayer->GetComponent<ValuesComponent>()->SetLives(3);
+	mainPlayer->GetComponent<TextureComponent>()->SetPosition((GameWindowSizeX) / 2 - Margin, WindowSizeY - Margin*3);
 
 	//bullets
 	mainPlayer->AddComponent(new ShootComponent(scene, id, isVersus));
 	mainPlayer->AddComponent(new PlayerComponent(scene));
-
-	//callback
-	Callback* callback = new Callback();
-	if (auto scoregocontainer{ scene->GetGameObject("ScoreBoard") }) {
-		auto scorego{ scoregocontainer->GetChild("Score") };
-		auto lifes{ scoregocontainer->GetChildren("Life") };
-		callback->AddObserver(new ScoreObserver(scorego->GetComponent<TextObjectComponent>()));
-		callback->AddObserver(new HealthObserver(lifes, scene));
-	}
-	callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
-	mainPlayer->GetComponent<ValuesComponent>()->SetCallback(callback);
 
 	if (id == 0) {
 		//Keyboard
@@ -420,6 +437,7 @@ void MakeGalaga(dae::Scene* scene, std::string textureName, int id, bool isVersu
 		Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP,dae::ControllerButton::DpadRight, id }, std::make_unique<StopMoveController>(mainPlayer->GetComponent<MoveControllerComponent>()));
 	}
 	
+	MakeValues(scene);
 }
 
 void MakeMainGalaga(dae::Scene* scene, bool isVersus) {
@@ -450,45 +468,45 @@ void MakeMainMenu(dae::Scene* scene) {
 	scene->Add(container5);
 
 	auto comp1{ new TextureComponent() };
-	comp1->SetName("bg_back1");
-	container2->SetName("bg_back1");
+	comp1->SetName(EnumStrings[Bg_back1]);
+	container2->SetName(EnumStrings[Bg_back1]);
 	container2->AddComponent(comp1);
-	container2->GetComponent<TextureComponent>("bg_back1")->SetTexture("bg_back.png");
-	auto rect{ container2->GetComponent<TextureComponent>("bg_back1")->GetRect() };
+	container2->GetComponent<TextureComponent>(EnumStrings[Bg_back1])->SetTexture("bg_back.png");
+	auto rect{ container2->GetComponent<TextureComponent>(EnumStrings[Bg_back1])->GetRect() };
 	auto startPos{ glm::vec2{ 0, 0 - (rect.h + WindowSizeY) } };
 
 	container2->AddComponent(new BackgroundComponent(150.f, startPos, { 0, 0 - (720 * 2) }));
 	container2->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("bg_back2");
-	container3->SetName("bg_back2");
+	comp1->SetName(EnumStrings[Bg_back2]);
+	container3->SetName(EnumStrings[Bg_back2]);
 	container3->AddComponent(comp1);
-	container3->GetComponent<TextureComponent>("bg_back2")->SetTexture("bg_back.png");
+	container3->GetComponent<TextureComponent>(EnumStrings[Bg_back2])->SetTexture("bg_back.png");
 	container3->AddComponent(new BackgroundComponent(150.f, startPos, { 0, 0 - (720 * 5) }));
 	container3->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("bg_front1");
-	container4->SetName("bg_front1");
+	comp1->SetName(EnumStrings[Bg_front1]);
+	container4->SetName(EnumStrings[Bg_front1]);
 	container4->AddComponent(comp1);
-	container4->GetComponent<TextureComponent>("bg_front1")->SetTexture("bg_front.png");
+	container4->GetComponent<TextureComponent>(EnumStrings[Bg_front1])->SetTexture("bg_front.png");
 	container4->AddComponent(new BackgroundComponent(300.f, startPos, { 0, 0 - (720 * 2) }));
 	container4->GetComponent<BackgroundComponent>();
 
 	comp1 = new TextureComponent();
-	comp1->SetName("bg_front2");
-	container5->SetName("bg_front2");
+	comp1->SetName(EnumStrings[Bg_front2]);
+	container5->SetName(EnumStrings[Bg_front2]);
 	container5->AddComponent(comp1);
-	container5->GetComponent<TextureComponent>("bg_front2")->SetTexture("bg_front.png");
+	container5->GetComponent<TextureComponent>(EnumStrings[Bg_front2])->SetTexture("bg_front.png");
 	container5->AddComponent(new BackgroundComponent(300.f, startPos, { 0, 0 - (720 * 5) }));
 	container5->GetComponent<BackgroundComponent>();
 
 	std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
-	container->SetName("MainMenu");
+	container->SetName(EnumStrings[MainMenu]);
 	scene->Add(container);
 	//container->AddComponent(new RotatorComponent());
-	container->AddComponent(new MoveMenuComponent(400.f));
+	container->AddComponent(new MoveMenuComponent(400.f, scene));
 	container->GetTransform()->Translate(0, 720);
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Emulogic-zrEw.ttf", 24);
@@ -540,15 +558,17 @@ void MakeMainMenu(dae::Scene* scene) {
 	highScore->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - Margin * 3, Margin);
 	highScoreScore->GetComponent<TextObjectComponent>()->SetPosition(WindowSizeX / 2 - SubMargin, SubMargin);
 
-
 	//logo
 	std::shared_ptr<GameObject> logo = std::make_shared<dae::GameObject>();
+	logo->SetName(EnumStrings[Logo]);
 	scene->Add(logo);
 	container->AddChild(logo.get());
 	logo->AddComponent(new TextureComponent());
 	logo->GetComponent<TextureComponent>()->SetTexture("galagaLogo.png");
+	logo->GetComponent<TextureComponent>()->SetName(EnumStrings[Logo]);
 	logo->GetComponent<TextureComponent>()->SetPosition(WindowSizeX / 2 - SubMargin * 1.75f, WindowSizeY / 2 - SubMargin * 2);
 	logo->GetComponent<TextureComponent>()->Scale(0.6f, 0.6f);
+	logo->GetTransform()->AddTranslate(0.f, WindowSizeY);
 
 	//game mode selection
 	std::shared_ptr<GameObject> player1 = std::make_shared<dae::GameObject>();
@@ -569,7 +589,7 @@ void MakeMainMenu(dae::Scene* scene) {
 
 	//game mode selector
 	std::shared_ptr<GameObject> selector = std::make_shared<dae::GameObject>();
-	selector->SetName("Selector");
+	selector->SetName(EnumStrings[Selector]);
 	scene->Add(selector);
 	container->AddChild(selector.get());
 	selector->AddComponent(new ModeSelector(scene, &MakeMainGalaga, &MakeSecondGalaga, &MakeStage, &MakeVersusGalaga, &CreateScore));

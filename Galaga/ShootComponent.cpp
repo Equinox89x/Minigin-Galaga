@@ -7,6 +7,7 @@
 #include "PlayerComponent.h"
 #include "Callback.h"
 #include "EnemyManager.h"
+#include "CapturedComponent.h"
 #include "OpposerComponent.h"
 
 
@@ -17,52 +18,20 @@ void ShootComponent::Shoot()
 	}
 
 	if(IsOpposer){
-		auto childen{ m_Scene->GetGameObjects("enemyBullet" + StrId) };
+		auto childen{ m_Scene->GetGameObjects(EnumStrings[EnemyBullet] + StrId) };
 		if (static_cast<int>(childen.size()) < m_MaxBullets) {
-			CreateBullet("enemyBullet", "enemyBullet", "png");
+			CreateBullet(EnumStrings[EnemyBullet], EnumStrings[EnemyBullet], "png");
 		}
 	}
-	else if(IsEnemy){
-		CreateBullet("enemyBullet", "enemyBullet", "png");
+	else if (IsEnemy) {
+		CreateBullet(EnumStrings[EnemyBullet], EnumStrings[EnemyBullet], "png");
 	}
 	else {
-		auto childen{ m_Scene->GetGameObjects("bullet" + StrId) };
+		auto childen{ m_Scene->GetGameObjects(EnumStrings[NormalBullet] + StrId) };
 		if (static_cast<int>(childen.size()) < m_MaxBullets) {
-			CreateBullet("bulletPlayer", "bullet", "png");
+			CreateBullet("bulletPlayer", EnumStrings[NormalBullet], "png");
 		}
 	}
-
-	/*auto childen{ m_Scene->GetGameObjects("bullet"+ StrId) };
-	if (static_cast<int>(childen.size()) < m_MaxBullets) {
-		auto bullet{ std::make_shared<GameObject>()};
-		bullet->AddComponent(new TextureComponent());
-		bullet->GetComponent<TextureComponent>()->SetTexture("bulletPlayer.png");
-		bullet->GetComponent<TextureComponent>()->Scale(3, 3);
-		bullet->SetName("bullet"+ StrId);
-
-		auto pos {GetGameObject()->GetTransform()->GetPosition() };
-		bullet->GetTransform()->Translate(pos.x + 23, pos.y);
-		if (IsOpposer) {
-			bullet->GetTransform()->Rotate(0, 180, 0);
-		}
-		m_Scene->Add(bullet);
-		GetGameObject()->GetComponent<ValuesComponent>()->IncreaseShots();
-	}*/
-
-	//auto childen{ m_Scene->GetGameObjects("enemyBullet" + StrId) };
-	//if (static_cast<int>(childen.size()) < m_MaxBullets) {
-	//	auto bullet{ std::make_shared<GameObject>() };
-	//	bullet->AddComponent(new TextureComponent());
-	//	bullet->GetComponent<TextureComponent>()->SetTexture("enemyBullet.png");
-	//	bullet->GetComponent<TextureComponent>()->Scale(3, 3);
-	//	bullet->SetName("enemyBullet" + StrId);
-
-	//	auto pos{ GetGameObject()->GetTransform()->GetPosition() };
-	//	bullet->GetTransform()->Translate(pos.x + 23, pos.y + 60);
-	//	bullet->GetTransform()->Rotate(0, 180, 0);
-	//	m_Scene->Add(bullet);
-	//	GetGameObject()->GetComponent<ValuesComponent>()->IncreaseShots();
-	//}
 }
 
 void ShootComponent::CreateBullet(std::string fileName, std::string name, std::string extention) {
@@ -73,28 +42,19 @@ void ShootComponent::CreateBullet(std::string fileName, std::string name, std::s
 	bullet->SetName(name + StrId);
 
 	auto pos{ GetGameObject()->GetTransform()->GetPosition() };
-	auto position{ IsOpposer || IsEnemy ? 60 : 0 };
-	bullet->GetTransform()->Translate(pos.x + 23, pos.y + position);
+	auto positionY{ IsOpposer || IsEnemy ? 60 : 0 };
+	auto rect = GetGameObject()->GetComponent<TextureComponent>()->GetRect();
+	auto rect2 = bullet->GetComponent<TextureComponent>()->GetRect();
+	bullet->GetTransform()->Translate(pos.x + ((rect.w/2)-(rect2.w/2)), pos.y + positionY);
 	if (IsOpposer || IsEnemy) {
 		bullet->GetTransform()->Rotate(0, 180, 0);
 	}
 	m_Scene->Add(bullet);
 	if (!IsOpposer && !IsEnemy) {
-		GetGameObject()->GetComponent<ValuesComponent>()->IncreaseShots();
+		if (auto go{ m_Scene->GetGameObject(EnumStrings[Values]) }) {
+			go->GetComponent<ValuesComponent>()->IncreaseShots();
+		}
 	}
-}
-
-void ShootComponent::Initialize()
-{
-	//Bullets = std::make_shared<dae::GameObject>();
-	//Bullets->SetName("bulletHolder");
-	//m_Scene.Add(Bullets);
-}
-
-void ShootComponent::FixedUpdate()
-{
-	//this has to happen in overlap and destroy the selected bullet
-	//m_Scene.Remove(m_Bullets[0]);
 }
 
 void ShootComponent::Update()
@@ -102,10 +62,10 @@ void ShootComponent::Update()
 	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
 	std::vector<std::shared_ptr<GameObject>> childen{};
 	if (IsEnemy || IsOpposer) {
-		childen = m_Scene->GetGameObjects("enemyBullet"+ StrId);
+		childen = m_Scene->GetGameObjects(EnumStrings[EnemyBullet] + StrId);
 	}
 	else {
-		childen = m_Scene->GetGameObjects("bullet"+ StrId);
+		childen = m_Scene->GetGameObjects(EnumStrings[NormalBullet] + StrId);
 	}
 
 	for (auto bullet : childen) {
@@ -113,7 +73,7 @@ void ShootComponent::Update()
 
 		float movement{ deltaTime * m_MoveSpeed };
 		if (!IsEnemy && !IsOpposer) {
-			auto newPos{ pos.y - movement};
+			auto newPos{ pos.y - movement };
 			if (newPos < 0) {
 				bullet->MarkForDestroy();
 				continue;
@@ -123,7 +83,7 @@ void ShootComponent::Update()
 			}
 		}
 		else {
-			auto newPos{ pos.y + movement};
+			auto newPos{ pos.y + movement };
 			if (newPos > 720) {
 				bullet->MarkForDestroy();
 				continue;
@@ -141,12 +101,13 @@ void ShootComponent::Update()
 		else {
 			IsOpposer ? HandlePlayerOverlap(bullet) : HandleOpposerOverlap(bullet);
 		}
+		if (!IsEnemy && !IsOpposer) HandleCapturedFigherOverlap(bullet);
 	}
 }
 
 void ShootComponent::HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
-	auto opposers{ m_Scene->GetOverlappingObjects(bullet.get(), "Opposer", "", true) };
+	auto opposers{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[Opposer], "", true, true) };
 	if (opposers.size() <= 0) return;
 
 	if (auto opposer{ opposers[0] }) {
@@ -164,12 +125,12 @@ void ShootComponent::HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bull
 
 void ShootComponent::HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
-	auto players{ m_Scene->GetOverlappingObjects(bullet.get(), "Player0", "", true) };
-	if (players.size() <= 0) return;
+	auto players{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[PlayerGeneral], "", false, true, true) };
 
-	if (auto player{ players[0] }) {
-		if (auto comp1{ player->GetComponent<ValuesComponent>() }) {
-			if (auto comp{ player->GetComponent<PlayerComponent>() }) {
+	for (auto player : players) {
+		//if (auto comp1{ player->GetComponent<ValuesComponent>() }) {
+		if (auto comp{ player->GetComponent<PlayerComponent>() }) {
+			if (auto comp1{ m_Scene->GetGameObject(EnumStrings[Values])->GetComponent<ValuesComponent>() }) {
 				comp->Die();
 			}
 		}
@@ -177,13 +138,27 @@ void ShootComponent::HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bulle
 	}
 }
 
+void ShootComponent::HandleCapturedFigherOverlap(std::shared_ptr<dae::GameObject>& bullet)
+{
+	auto players{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[CapturedFighter], "", false, true, true) };
+
+	for (auto player : players)
+	{
+		if (auto comp{ player->GetComponent<CapturedComponent>() }) {
+			if (auto comp1{ m_Scene->GetGameObject(EnumStrings[Values])->GetComponent<ValuesComponent>() }) {
+				comp->Die();
+			}
+		}
+		bullet->MarkForDestroy();
+		m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->CheckStatus();
+	}
+}
+
 void ShootComponent::HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
-	auto enemies{ m_Scene->GetOverlappingObjects(bullet.get(), "Enemy", "EnemyHolder", true) };
+	auto enemies{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[Enemy], EnumStrings[EnemyHolder], true, true, true) };
 	for (auto enemy : enemies) {
 		if (auto comp{ enemy->GetComponent<EnemyComponent>() }) {
-			bullet->GetComponent<TextureComponent>()->Scale(1, 1);
-			//bullet->GetComponent<TextureComponent>()->SetOffset({ -75, -50 });
 			if (comp->GetLives() <= 1) {
 				comp->DestroyEnemy();
 			}
@@ -191,11 +166,12 @@ void ShootComponent::HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet
 				comp->Damage();
 			}
 			bullet->MarkForDestroy();
+			m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->CheckStatus();
 
-			GetGameObject()->GetComponent<ValuesComponent>()->IncreaseScore(comp->GetScore());
-			GetGameObject()->GetComponent<ValuesComponent>()->IncreaseHits();
+			m_Scene->GetGameObject(EnumStrings[Values])->GetComponent<ValuesComponent>()->IncreaseScore(comp->GetScore());
+			m_Scene->GetGameObject(EnumStrings[Values])->GetComponent<ValuesComponent>()->IncreaseHits();
 
-			m_Scene->GetGameObject("EnemyHolder")->GetComponent<EnemyManager>()->CheckStatus();
+			m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->CheckStatus();
 			break;
 		}
 	}
