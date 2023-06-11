@@ -21,8 +21,11 @@ public:
     bool CanBeGrabbed{ true };
 
 private:
-
     Scene* m_Scene{};
     bool HasDied{ false };
     float DefaultDeathTimer{ 4 }, DeathTimer{ DefaultDeathTimer };
+   
+    void HandleEnemyOverlap();
+    void HandleDeathEnd();
+    void HandleRespawn();
 };

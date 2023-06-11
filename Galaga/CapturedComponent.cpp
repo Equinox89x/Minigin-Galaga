@@ -24,15 +24,8 @@ void CapturedComponent::Update()
 	if (IsTurned) {
 		MoveSpeedChangeTimer -= deltaTime;
 		if (MoveSpeedChangeTimer <= 0) {
-			std::random_device randomDevice;
-
-			std::mt19937 generatedNr(randomDevice());
-			std::uniform_real_distribution<float> distributeVal(MinMoveSpeed, MaxMoveSpeed);
-			MoveSpeed = distributeVal(generatedNr);
-
-			std::mt19937 generatedNr2(randomDevice());
-			std::uniform_real_distribution<float> distributeVal2(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
-			MoveSpeedChangeTimer = distributeVal2(generatedNr2);
+			MoveSpeed = GalagaMath::CalculateChance(MinMoveSpeed, MaxMoveSpeed);
+			MoveSpeedChangeTimer = GalagaMath::CalculateChance(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
 		}
 
 
@@ -53,10 +46,7 @@ void CapturedComponent::Update()
 
 		AttackTimer -= deltaTime;
 		if (AttackTimer <= 0) {
-			std::random_device randomDevice;
-			std::mt19937 generatedNr(randomDevice());
-			std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
-			double chance = distributeVal(generatedNr);
+			double chance = GalagaMath::CalculateChance();
 			if (chance <= 0.5f) {
 				GetGameObject()->GetComponent<ShootComponent>()->Shoot();
 			}

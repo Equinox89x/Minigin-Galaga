@@ -34,6 +34,7 @@ namespace GalagaMath {
 		float x{ 0.0 };
 		float y{ 0.0 };
 
+		//Apply the quadtratic bezier formula as many times as there are controlPoint values
 		for (int i = 0; i <= n; i++) {
 			float blend{ static_cast<float>(BinomialCoeff(n, i) * pow(1 - t, n - i) * pow(t, i)) };
 			x += controlPoints[i].x * blend;
@@ -44,39 +45,25 @@ namespace GalagaMath {
 	}
 
 	inline bool IsOverlapping(const SDL_Rect& source, const SDL_Rect& target) {
-		// Check if the squares overlap on the x-axis
 		bool doesXOverlap = (source.x < target.x + target.w) && (source.x + source.w > target.x);
-
-		// Check if the squares overlap on the y-axis
 		bool doesYOverlap = (source.y < target.y + target.h) && (source.y + source.h > target.y);
-
-		// Return true if there is overlap on both axes
 		return doesXOverlap && doesYOverlap;
 	}
 
 	inline glm::vec2 MoveRectTowards(SDL_Rect& rect1, const SDL_Rect& rect2, float speed)
 	{
-		// Calculate the center points of the rectangles
-		int rect1CenterX = rect1.x + rect1.w / 2;
-		int rect1CenterY = rect1.y + rect1.h / 2;
-		int rect2CenterX = rect2.x + rect2.w / 2;
-		int rect2CenterY = rect2.y + rect2.h / 2;
+		glm::vec2 rect1Center(rect1.x + rect1.w / 2, rect1.y + rect1.h / 2);
+		glm::vec2 rect2Center(rect2.x + rect2.w / 2, rect2.y + rect2.h / 2);
 
-		// Calculate the distance between the center points
-		float distanceX = static_cast<float>(rect2CenterX - rect1CenterX);
-		float distanceY = static_cast<float>(rect2CenterY - rect1CenterY);
+		glm::vec2 direction = glm::normalize(rect2Center - rect1Center);
 
-		// Calculate the magnitude of the distance
-		float distanceMagnitude = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+		return direction * speed;
+	}
 
-		// Calculate the normalized direction vector
-		float directionX = distanceX / distanceMagnitude;
-		float directionY = distanceY / distanceMagnitude;
-
-		// Calculate the movement based on the speed
-		float movementX = directionX * speed;
-		float movementY = directionY * speed;
-
-		return glm::vec2{ movementX, movementY };
+	inline float CalculateChance(float min = 0.f, float max = 1.f) {
+		std::random_device randomDevice;
+		std::mt19937 generatedNr(randomDevice());
+		std::uniform_real_distribution<float> distributeVal(min, max);
+		return distributeVal(generatedNr);
 	}
 }

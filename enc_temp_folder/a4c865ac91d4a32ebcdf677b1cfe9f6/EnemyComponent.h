@@ -37,6 +37,8 @@ public:
 
 	virtual void Initialize() override;
 	virtual void Update() override;
+	void HandleZakoDive();
+	void HandleGeneralDive(glm::vec3& pos, float movement);
 	virtual void Render() const override;
 	//virtual void FixedUpdate() override; 
 
@@ -92,16 +94,14 @@ private:
 	bool ShouldMoveUp{ false };
 
 	void HandleChanceCalculation(float deltaTime);
+	void CalculateZakoDive();
+	void CalculateGeneralDive();
 	void HandleCaptureAndReturn(glm::vec3& pos);
 	void HandleGrabbing();
 	void HandleBossDive(glm::vec3& pos, float movement);
-	void HandleZakoDive();
-	void HandleGeneralDive(glm::vec3& pos, float movement);
 
 	void ResetBeaming();
 	void CaptureFighter(GameObject* player, GameObject* enemy);
 
-	void CalculateZakoDive();
-	void CalculateGeneralDive();
 };
 

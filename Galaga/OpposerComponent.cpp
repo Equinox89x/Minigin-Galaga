@@ -136,15 +136,8 @@ void OpposerComponent::HandleRandomMovement(float deltaTime)
 {
 	MoveSpeedChangeTimer -= deltaTime;
 	if (MoveSpeedChangeTimer <= 0) {
-		std::random_device randomDevice;
-
-		std::mt19937 generatedNr(randomDevice());
-		std::uniform_real_distribution<float> distributeVal(MinMoveSpeed, MaxMoveSpeed);
-		MoveSpeed = distributeVal(generatedNr);
-
-		std::mt19937 generatedNr2(randomDevice());
-		std::uniform_real_distribution<float> distributeVal2(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
-		MoveSpeedChangeTimer = distributeVal2(generatedNr2);
+		MoveSpeed = GalagaMath::CalculateChance(MinMoveSpeed, MaxMoveSpeed);
+		MoveSpeedChangeTimer = GalagaMath::CalculateChance(MinMoveSpeedChangeTimer, MaxMoveSpeedChangeTimer);
 	}
 
 

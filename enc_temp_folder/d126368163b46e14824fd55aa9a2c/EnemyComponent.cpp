@@ -116,11 +116,11 @@ void EnemyComponent::Update()
 				StartTime += deltaTime / 2;
 
 				if (EnemyType == EnemyType::ZAKO) {
-					HandleZakoDive();
+					//HandleZakoDive();
 				}
 
 				if (EnemyType == EnemyType::GOEI) {
-					HandleGeneralDive(pos, movement);
+					//HandleGeneralDive(pos, movement);
 				}
 
 				if (EnemyType == EnemyType::BOSS) {
@@ -191,10 +191,12 @@ void EnemyComponent::HandleGeneralDive(glm::vec3& pos, float movement)
 		auto rect1 = GetGameObject()->GetComponent<TextureComponent>()->GetRect();
 		SDL_Rect rect2{ EndPosition.x, EndPosition.y + Cellsize, Cellsize, Cellsize };
 		if (GalagaMath::IsOverlapping(rect1, rect2)) {
-			GetGameObject()->GetTransform()->Translate(EndPosition);
-			IsDiving = false;
-			ShouldMoveUp = false;
-			BombingPath = OiginalBombingPath;
+		//if (pos.y < EndPosition.y) {
+				GetGameObject()->GetTransform()->Translate(EndPosition);
+				IsDiving = false;
+				ShouldMoveUp = false;
+				BombingPath = OiginalBombingPath;
+			//}
 		}
 	}
 }
