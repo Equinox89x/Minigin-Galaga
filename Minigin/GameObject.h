@@ -38,6 +38,7 @@
 		CapturedFighter,
 		Weapon,
 		Opposer,
+		Global,
 		NUM_ENUM_VALUES
 	};
 
@@ -48,7 +49,8 @@
 	"ScoreBoard", "Score", "Life", "Values",
 	"Bg_back1", "Bg_back2", "Bg_front1", "Bg_front2",
 	"MainMenu", "EndScreen", "Selector", "Logo",
-	"CapturedGalaga", "Weapon", "Opposer",	
+	"CapturedGalaga", "Weapon", "Opposer",
+	"Global"
 	};
 
 	enum class Stages {
@@ -75,6 +77,7 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 		virtual void Initialize();
+		virtual void PostInitialize();
 		virtual void Update();
 		virtual void Render() const;
 
@@ -90,6 +93,7 @@ namespace dae
 				m_pComponents.push_back(comp);
 				comp->m_pGameObject = this;
 				dynamic_cast<Component*>(comp)->Initialize();
+				dynamic_cast<Component*>(comp)->PostInitialize();
 				return comp;
 			}
 			return nullptr;

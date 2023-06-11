@@ -9,6 +9,7 @@
 #include "EnemyManager.h"
 #include "CapturedComponent.h"
 #include "OpposerComponent.h"
+#include "AudioComponent.h"
 
 
 void ShootComponent::Shoot()
@@ -55,6 +56,8 @@ void ShootComponent::CreateBullet(std::string fileName, std::string name, std::s
 			go->GetComponent<ValuesComponent>()->IncreaseShots();
 		}
 	}
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayShootSound(false);
 }
 
 void ShootComponent::Update()

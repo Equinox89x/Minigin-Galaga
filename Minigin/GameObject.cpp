@@ -17,6 +17,16 @@ dae::GameObject::~GameObject() {
 	m_pComponents.clear();
 };
 
+void dae::GameObject::PostInitialize(){
+	for (Component* comp : m_pComponents) {
+		comp->PostInitialize();
+	}
+
+	for (GameObject* child : m_pChildren) {
+		child->PostInitialize();
+	}
+}
+
 void dae::GameObject::Initialize()
 {
 	for (Component* comp : m_pComponents) {
@@ -120,6 +130,7 @@ void dae::GameObject::AddChild(GameObject* const go)
 	go->GetTransform()->UpdateTransforms();
 
 	go->Initialize();
+	go->PostInitialize();
 }
 
 dae::GameObject* dae::GameObject::GetChild(std::string name) {

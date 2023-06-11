@@ -100,7 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL_MIXER\include;$(SolutionDir)3rdParty/SDL_MIXER;$(SolutionDir)3rdParty/imgui;$(SolutionDir)3rdParty/steamworks/public/steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\include;$(SolutionDir)3rdParty/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -115,8 +115,7 @@
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\public\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -129,7 +128,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL_MIXER\include;$(SolutionDir)3rdParty/SDL_MIXER;$(SolutionDir)3rdParty/imgui;$(SolutionDir)3rdParty/steamworks/public/steam;$(SolutionDir)3rdParty\imgui-1.89.4;$(SolutionDir)\3rdParty\imgui-1.89.4;$(SolutionDir)3rdParty\imgui;$(SolutionDir)\3rdParty\imgui;%(AdditionalIncludeDirectories);$(SolutionDir)3rdParty/steamworks/public/steam</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\include;$(SolutionDir)3rdParty/imgui;$(SolutionDir)3rdParty\imgui-1.89.4;$(SolutionDir)\3rdParty\imgui-1.89.4;$(SolutionDir)3rdParty\imgui;$(SolutionDir)\3rdParty\imgui;%(AdditionalIncludeDirectories);$(SolutionDir)3rdParty/steamworks/public/steam</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -144,8 +143,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\public\redistributable_bin\win64\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -160,7 +158,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL_MIXER\include;$(SolutionDir)3rdParty/SDL_MIXER;$(SolutionDir)3rdParty/imgui;$(SolutionDir)3rdParty/steamworks/public/steam;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\include;$(SolutionDir)3rdParty/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -177,8 +175,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\public\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -193,7 +190,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL_MIXER\include;$(SolutionDir)3rdParty/SDL_MIXER;$(SolutionDir)3rdParty/imgui;$(SolutionDir)3rdParty/steamworks/public/steam;%(AdditionalIncludeDirectories);$(SolutionDir)3rdParty/steamworks/public/steam</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty/imgui_plot;$(SolutionDir)3rdParty/imgui-plot-master;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4;$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\include;$(SolutionDir)3rdParty/imgui;%(AdditionalIncludeDirectories);$(SolutionDir)3rdParty/steamworks/public/steam</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -210,18 +207,18 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
       <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
 xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\public\redistributable_bin\win64\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
+xcopy "$(SolutionDir)3rdParty\SDL2_mixer-2.0.4\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AudioClip.h" />
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="Callback.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ConsoleAudio.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FPSCounterComponent.h" />
@@ -234,6 +231,7 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="Locator.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="GalagaMath.h" />
     <ClInclude Include="MoveControllerComponent.h" />
@@ -241,7 +239,6 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
     <ClInclude Include="Observer.h" />
     <ClInclude Include="OverlapComponent.h" />
     <ClInclude Include="RotatorComponent.h" />
-    <ClInclude Include="SoundSystem.h" />
     <ClInclude Include="Steam.h" />
     <ClInclude Include="TextureComponent.h" />
     <ClInclude Include="GameObject.h" />
@@ -260,9 +257,9 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
     <ClInclude Include="ValuesComponent.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioClip.cpp" />
     <ClCompile Include="Callback.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ConsoleAudio.cpp" />
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSCounterComponent.cpp" />
@@ -274,12 +271,12 @@ xcopy "$(SolutionDir)3rdParty\SDL_MIXER\lib\$(PlatformTarget)\*.dll" "$(OutputPa
     <ClCompile Include="imgui_plot.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
+    <ClCompile Include="Locator.cpp" />
     <ClCompile Include="MoveControllerComponent.cpp" />
     <ClCompile Include="MoveKeyboardComponent.cpp" />
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="OverlapComponent.cpp" />
     <ClCompile Include="RotatorComponent.cpp" />
-    <ClCompile Include="SoundSystem.cpp" />
     <ClCompile Include="TextureComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />

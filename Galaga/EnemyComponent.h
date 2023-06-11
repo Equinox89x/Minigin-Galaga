@@ -3,6 +3,8 @@
 #include <glm/ext/vector_float2.hpp>
 #include <GalagaMath.h>
 #include <Scene.h>
+#include <TextureComponent.h>
+
 using namespace dae;
 
 namespace dae {
@@ -48,7 +50,7 @@ public:
 	void TranslateInitialPosition(glm::vec2 addedPos);
 
 	int GetLives() { return Lives; };
-	void Damage() { Lives--; };
+	void Damage() { Lives--; GetGameObject()->GetComponent<TextureComponent>()->SetTexture("boss.png", 0.3f, 2); };
 	void SetLives(int lives) { Lives = lives; };
 	void SetManagerMovement(glm::vec2 movement) { ManagerMovement = movement; };
 

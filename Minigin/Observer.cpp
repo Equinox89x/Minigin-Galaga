@@ -6,6 +6,7 @@
 #include "../Galaga/MoveMenuComponent.h"
 #include "InputManager.h"
 #include "../Galaga/EnemyManager.h"
+#include "../Galaga/AudioComponent.h"
 
 void dae::HealthObserver::Notify(GameObject* go, Event event)
 {
@@ -108,7 +109,7 @@ void dae::StageCleared::Notify(GameObject* /*go*/, Event event)
 	auto opposer{ m_pScene->GetGameObject(EnumStrings[Opposer]) };
 	auto values{ m_pScene->GetGameObject(EnumStrings[Values]) };
 	auto capturedFighters{ m_pScene->GetGameObjects(EnumStrings[CapturedFighter], false) };
-	auto logo{ m_pScene->GetGameObject(EnumStrings[Logo])->GetTransform() };
+	//auto logo{ m_pScene->GetGameObject(EnumStrings[Logo])->GetTransform() };
 	auto bullets{ m_pScene->GetGameObjects(EnumStrings[BulletGeneral], false) };
 
 	switch (event)
@@ -148,7 +149,7 @@ void dae::StageCleared::Notify(GameObject* /*go*/, Event event)
 				fighter->MarkForDestroy();
 			}
 
-			logo->AddTranslate(0, WindowSizeY);
+			//logo->AddTranslate(0, WindowSizeY);
 
 			for (auto bullet : bullets)
 			{
@@ -173,6 +174,8 @@ void dae::ToMenu::Notify(GameObject* /*go*/, Event event)
 	{
 	case Event::ToMenu:
 		Menu->GetComponent<MoveMenuComponent>()->Reset();
+		m_pScene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayMenuSound();
+
 		m_pScene->GetGameObject(EnumStrings[EndScreen])->MarkForDestroy();
 		CreateMenuInput(m_pScene);
 		break;

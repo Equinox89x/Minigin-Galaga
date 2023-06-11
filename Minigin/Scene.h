@@ -14,6 +14,7 @@ namespace dae
 		void RemoveAll();
 
 		void Initialize();
+		void PostInitialize();
 		void Update();
 		void Render() const;
 

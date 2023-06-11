@@ -52,6 +52,7 @@ Scene::~Scene() = default;
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
 	object->Initialize();
+	object->PostInitialize();
 	m_objects.emplace_back(std::move(object));
 }
 
@@ -70,6 +71,14 @@ void dae::Scene::Initialize()
 	for (auto& object : m_objects)
 	{
 		object->Initialize();
+	}
+}
+
+void dae::Scene::PostInitialize()
+{
+	for (auto& object : m_objects)
+	{
+		object->PostInitialize();
 	}
 }
 

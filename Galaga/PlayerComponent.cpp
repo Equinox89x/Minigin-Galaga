@@ -4,7 +4,7 @@
 #include <ValuesComponent.h>
 #include <Timer.h>
 #include "EnemyManager.h"
-//#include <Minigin.h>
+#include "AudioComponent.h"
 
 void PlayerComponent::Update()
 {
@@ -78,6 +78,8 @@ void PlayerComponent::Die()
     player->EnableCollision(false);
 
     m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->DisableEnemies(DefaultDeathTimer + 1);
+
+    m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayPlayerDeathSound(false);
 }
 
 void PlayerComponent::Grab()

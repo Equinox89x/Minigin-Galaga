@@ -1,13 +1,18 @@
 #pragma once
 #include <Scene.h>
 #include <Component.h>
+#include "Locator.h"
+#include "Audio.h"
 using namespace dae;
 
 class CapturedComponent final : public Component
 {
 
 public:
-    CapturedComponent(Scene* scene, GameObject* player, GameObject* enemy) : m_Scene{ scene }, Player{ player }, EnemyObj{ enemy } {};
+    CapturedComponent(Scene* scene, GameObject* player, GameObject* enemy) : m_Scene{ scene }, Player{ player }, EnemyObj{ enemy } 
+    {
+        m_pAudioService = Locator::getAudio();
+    };
     ~CapturedComponent() = default;
     CapturedComponent(const CapturedComponent&) = delete;
     CapturedComponent(CapturedComponent&&) noexcept = delete;
@@ -25,6 +30,7 @@ private:
     glm::vec3 StartPosition{}, MoveToPosition{};
     GameObject* EnemyObj{};
     GameObject* Player{};
+    Audio* m_pAudioService;
 
     float MaxMoveSpeedChangeTimer{ 1 }, MinMoveSpeedChangeTimer{ 0.2f }, MoveSpeedChangeTimer{ MaxMoveSpeedChangeTimer };
     float MaxMoveSpeed{ 500 }, MinMoveSpeed{ 100 }, MoveSpeed{ MaxMoveSpeed };

@@ -14,6 +14,9 @@
 //#include <steam_api.h>
 #include "Main.h"
 #include "InputManager.h"
+#include "Audio.h"
+#include "ConsoleAudio.h"
+#include "Locator.h"
 
 SDL_Window* g_window{};
 
@@ -77,6 +80,7 @@ dae::Minigin::Minigin(const std::string &dataPath)
 dae::Minigin::~Minigin()
 {
 	Renderer::GetInstance().Destroy();
+	Locator::Quit();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();
@@ -86,10 +90,12 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 
+	Audio* audioService = new ConsoleAudio();
+	Locator::provide(audioService);
+	std::thread audioThread(&Audio::Update, audioService);
+
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
-	//auto& input = Input::GetInstance();
-	//auto& input = InputManager();
 
 	auto input = InputManager(0);
 	auto input2 = InputManager(1);
@@ -98,27 +104,32 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	m_Running = true;
 	bool isFirstTime{ true };
 
+
 	Timer::GetInstance().Start();
 	while (m_Running)
 	{
 		Timer::GetInstance().Update();
 
-		//doContinue = input.ProcessInput();
 		input.HandleInput();
 		input2.HandleInput();
 		input3.HandleInput();
 
 		if (isFirstTime) {
 			sceneManager.Initialize();
+			sceneManager.PostInitialize();
 			isFirstTime = false;
 		}
 		sceneManager.Update();
 		renderer.Render();
 	}
+
+	audioThread.join();
+
 	Timer::GetInstance().Stop();
 }
 
 void dae::Minigin::StopRunning()
 {
 	m_Running = false;
+	Locator::getAudio()->StopAllSounds();
 }

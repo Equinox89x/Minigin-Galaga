@@ -4,6 +4,28 @@
 #include "TransformComponent.h"
 #include "EnemyComponent.h"
 
+void MoveEnemy(GameObject* enemy, float movement)
+{
+	if (enemy->GetTransform()->GetPosition().x <= (GameWindowSizeX) / 2.4f) {
+		enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ -movement, 0 });
+		enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ -movement, 0 });
+		enemy->GetTransform()->AddTranslate(-movement, 0);
+	}
+	else {
+		enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
+		enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
+		enemy->GetTransform()->AddTranslate(movement, 0);
+	}
+}
+
+void MoveEnemyDuringSpawn(GameObject* enemy, float movement)
+{
+	enemy->GetTransform()->AddTranslate(movement, 0);
+	enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
+	enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
+}
+
+
 void EnemyManager::Update()
 {
 	if (IsVersus) return;
@@ -37,7 +59,6 @@ void EnemyManager::Update()
 			enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
 			enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
 		}
-		//GetGameObject()->GetTransform()->AddTranslate(movement, 0);
 	}
 	else {
 		for (auto enemy : children) {
@@ -47,7 +68,7 @@ void EnemyManager::Update()
 				enemy->GetTransform()->AddTranslate(-movement, 0);
 			}
 			else {
-				enemy->GetComponent<EnemyComponent>()->SetManagerMovement({movement, 0});
+				enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
 				enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
 				enemy->GetTransform()->AddTranslate(movement, 0);
 			}

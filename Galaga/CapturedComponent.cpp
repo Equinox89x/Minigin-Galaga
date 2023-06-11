@@ -49,6 +49,11 @@ void CapturedComponent::Update()
 			double chance = GalagaMath::CalculateChance();
 			if (chance <= 0.5f) {
 				GetGameObject()->GetComponent<ShootComponent>()->Shoot();
+
+				m_pAudioService->SetEffectVolume(60);
+				int soundId;
+				soundId = m_pAudioService->LoadSound("../Data/Sound/ShootSound.wav");
+				m_pAudioService->PlaySound(soundId);
 			}
 			AttackTimer = DefaultAttackTimer;
 		}
@@ -82,4 +87,8 @@ void CapturedComponent::Die()
 
 	player->EnableCollision(false);
 
+	m_pAudioService->SetEffectVolume(60);
+	int soundId;
+	soundId = m_pAudioService->LoadSound("../Data/Sound/PlayerDeathSound.wav");
+	m_pAudioService->PlaySound(soundId);
 }

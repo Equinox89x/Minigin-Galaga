@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Observers">
       <UniqueIdentifier>{cfd6cabb-7651-420c-8590-c900a89b26cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{d0b6d58e-9814-4d45-a988-121485a0eff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{6fc993cc-a6f5-4013-9052-aeee79312ad0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -138,17 +144,20 @@
     <ClInclude Include="Steam.h">
       <Filter>Header Files\Observers</Filter>
     </ClInclude>
-    <ClInclude Include="AudioClip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OverlapComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="GalagaMath.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Locator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleAudio.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Header Files\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -245,14 +254,14 @@
     <ClCompile Include="Observer.cpp">
       <Filter>Source Files\Observers</Filter>
     </ClCompile>
-    <ClCompile Include="AudioClip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OverlapComponent.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Locator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

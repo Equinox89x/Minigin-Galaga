@@ -7,6 +7,14 @@ void dae::SceneManager::Initialize()
 	{
 		scene->Initialize();
 	}
+
+
+}void dae::SceneManager::PostInitialize()
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->PostInitialize();
+	}
 }
 
 void dae::SceneManager::Update()

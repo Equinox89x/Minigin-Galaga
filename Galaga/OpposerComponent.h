@@ -2,6 +2,7 @@
 #include "Component.h"
 #include <Scene.h>
 #include <glm/ext/vector_float2.hpp>
+#include <TextureComponent.h>
 
 using namespace dae;
 
@@ -21,7 +22,7 @@ public:
 
 	void DestroyOpposer();
 	int GetLives() { return Lives; };
-	void Damage() { Lives--; };
+	void Damage() { Lives--;  GetGameObject()->GetComponent<TextureComponent>()->SetTexture("boss.png", 0.3f, 2); };
 	void ExecuteBeam();
 
 private:

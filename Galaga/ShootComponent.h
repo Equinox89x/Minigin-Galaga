@@ -3,6 +3,7 @@
 #include "TextureComponent.h"
 #include "Scene.h"
 #include <list>
+
 using namespace dae;
 
 	class ShootComponent final : public Component
@@ -17,6 +18,7 @@ using namespace dae;
 			IsOpposer{ isOpposer } ,
 			IsEnemy{ isEnemy }
 		{};
+
 		~ShootComponent() = default;
 		ShootComponent(const ShootComponent&) = delete;
 		ShootComponent(ShootComponent&&) noexcept = delete;

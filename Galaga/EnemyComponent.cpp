@@ -3,7 +3,6 @@
 #include <Timer.h>
 #include <random>
 #include <Minigin.h>
-#include <TextureComponent.h>
 #include <glm/gtx/rotate_vector.hpp>
 #include "ShootComponent.h"
 #include "Renderer.h"
@@ -12,6 +11,7 @@
 #include "EnemyManager.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
+#include "AudioComponent.h"
 
 void EnemyComponent::Initialize()
 {
@@ -83,7 +83,6 @@ void EnemyComponent::Initialize()
 	BombingPath = OiginalBombingPath;
 
 	GetGameObject()->EnableCollision(true);
-
 }
 
 void EnemyComponent::Update()
@@ -189,31 +188,29 @@ void EnemyComponent::HandleGeneralDive(glm::vec3& pos, float movement)
 	else {
 		GetGameObject()->GetTransform()->AddTranslate(ManagerMovement.x, movement);
 		auto rect1 = GetGameObject()->GetComponent<TextureComponent>()->GetRect();
-		SDL_Rect rect2{ EndPosition.x, EndPosition.y + Cellsize, Cellsize, Cellsize };
+		SDL_Rect rect2{ static_cast<int>(EndPosition.x), static_cast<int>(EndPosition.y + Cellsize), static_cast<int>(Cellsize), static_cast<int>(Cellsize )};
 		if (GalagaMath::IsOverlapping(rect1, rect2)) {
 			GetGameObject()->GetTransform()->Translate(EndPosition);
 			IsDiving = false;
 			ShouldMoveUp = false;
 			BombingPath = OiginalBombingPath;
+
+			m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->StopSound();
 		}
 	}
 }
 
-
 void EnemyComponent::HandleBossDive(glm::vec3& pos, float movement)
 {
-	/*if (EnemyType != EnemyType::BOSS) {
-		if (pos.y >= WindowSizeY - Cellsize) {
-			CanReturn = true;
-		}
-	}
-	else {*/
 	if (IsTractorDiving) {
-		if(pos.y >= WindowSizeY / 1.7f && !CanReturn) {
+		if (pos.y >= WindowSizeY / 1.7f && !CanReturn) {
 			GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Weapon])->SetIsVisible(true);
 			GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetPaused(true);
 			GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetFrame(2);
 			IsBeaming = true;
+
+			m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayTractorBeamSound(false);
+
 		}
 		else {
 			GetGameObject()->GetTransform()->AddTranslate(ManagerMovement.x, CanReturn ? -movement : movement);
@@ -221,15 +218,12 @@ void EnemyComponent::HandleBossDive(glm::vec3& pos, float movement)
 				GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
 				IsTractorDiving = false;
 			}
-
 		}
 	}
 	else {
 		HandleGeneralDive(pos, movement);
 	}
-	//}
 }
-
 
 void EnemyComponent::HandleChanceCalculation(float deltaTime)
 {
@@ -247,47 +241,26 @@ void EnemyComponent::HandleChanceCalculation(float deltaTime)
 				break;
 
 			case EnemyType::ZAKO:
-				if (GalagaMath::CalculateChance() <= 0.5f) GetGameObject()->GetComponent<ShootComponent>()->Shoot();
+				if (GalagaMath::CalculateChance() <= 0.5f) {
+					GetGameObject()->GetComponent<ShootComponent>()->Shoot();
+
+					m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayShootSound(false);
+
+				}
 				else CalculateZakoDive();
 				break;
 
 			case EnemyType::BOSS:
 				if (GalagaMath::CalculateChance() <= 0.5f) CalculateGeneralDive();
-				else IsTractorDiving = true;
+				else {
+					m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDiveSound(false);
+					IsTractorDiving = true;
+				}
 				break;
 
 			default:
 				break;
 			}
-
-			/*if (EnemyType == EnemyType::ZAKO || EnemyType == EnemyType::BOSS) {
-				double chance2 = GalagaMath::CalculateChance();
-				if (chance2 <= 0.5f) {
-					if (EnemyType == EnemyType::ZAKO) GetGameObject()->GetComponent<ShootComponent>()->Shoot();
-					if (EnemyType == EnemyType::BOSS) { CalculateGeneralDive(); IsFullDiving = true; }
-				}
-				else {
-					auto pos{ m_Scene->GetGameObject(EnumStrings[Player0])->GetTransform()->GetPosition() };
-					int Modifier{ 1 };
-					if (pos.x < GetGameObject()->GetTransform()->GetPosition().x) Modifier = -1;
-
-					ZakoBombingPath[0] = EndPosition;
-					ZakoBombingPath[1] = { ZakoBombingPath[0].x - (300* Modifier), ZakoBombingPath[0].y + 200 };
-					ZakoBombingPath[2] = { ZakoBombingPath[0].x + (300 * Modifier), ZakoBombingPath[0].y + 150 };
-					ZakoBombingPath[3] = pos;
-					ZakoBombingPath[4] = { ZakoBombingPath[3].x + (50 * Modifier), ZakoBombingPath[3].y + 208 };
-					ZakoBombingPath[5] = { ZakoBombingPath[4].x + (250 * Modifier), ZakoBombingPath[4].y + 102 };
-					ZakoBombingPath[6] = { ZakoBombingPath[5].x + (150 * Modifier), ZakoBombingPath[5].y - 455 };
-					ZakoBombingPath[7] = EndPosition;
-					IsDiving = true;
-					StartTime = 0;
-
-				}
-			}
-			else {
-				CalculateGeneralDive();
-				IsDiving = true;
-			}*/
 		}
 		DiveTimer = DefaultDiveTimer;
 	}
@@ -310,6 +283,9 @@ void EnemyComponent::CalculateZakoDive()
 	StartTime = 0;
 
 	IsDiving = true;
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDiveSound(false);
+
 }
 
 void EnemyComponent::CalculateGeneralDive()
@@ -323,15 +299,14 @@ void EnemyComponent::CalculateGeneralDive()
 	BombingPath[BombingPath.size() - 2] = pos;
 	StartTime = 0;
 	IsDiving = true;
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDiveSound(false);
 }
 
 void EnemyComponent::HandleCaptureAndReturn(glm::vec3& pos)
 {
 	if (pos.y <= EndPosition.y && CanReturn) {
-		//IsFullDiving = false;
-		//IsDiving = false;
 		CanReturn = false;
-		//GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);*/
 
 		if (ShipCaptured && CurrentCapturedFighter != "") {
 			if (auto fighter{ m_Scene->GetGameObject(CurrentCapturedFighter) }) {
@@ -395,6 +370,9 @@ void EnemyComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 	m_Scene->Add(go);
 	ShipCaptured = true;
 	m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->AcknowledgeFighterCaptured();
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayCapturedTractorBeamSound(false);
+
 }
 
 void EnemyComponent::Render() const
@@ -410,6 +388,8 @@ void EnemyComponent::DestroyEnemy()
 	GetGameObject()->EnableCollision(false);
 	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetTexture("explosion.png", 0.1f, 4);
 	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetOffset({ -40, -25 });
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDeathSound(false);
 }
 
 void EnemyComponent::TranslateInitialPosition(glm::vec2 addedPos)

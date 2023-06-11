@@ -4,15 +4,6 @@
 void dae::MoveMenuComponent::Update()
 {
 	if (m_CanMove) {
-		/*	m_Angle += Timer::GetInstance().GetDeltaTime() * m_MoveSpeed;
-			glm::vec3 pos{ Move(0, m_Angle, m_OriginalPoint) };
-			GameObject* go{ GetGameObject() };
-			go->GetTransform()->Translate(pos);
-
-			if (pos.y <= -m_OriginalPoint.y) {
-				m_CanMove = false;
-			}*/
-
 		auto dt{ Timer::GetInstance().GetDeltaTime() };
 		auto move{ dt * m_MoveSpeed };
 		GetGameObject()->GetTransform()->AddTranslate(0, -move);
@@ -33,6 +24,5 @@ void dae::MoveMenuComponent::Reset()
 void dae::MoveMenuComponent::Initialize()
 {
 	SetOriginPoint();
-
 }
 

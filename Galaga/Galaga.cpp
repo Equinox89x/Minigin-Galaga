@@ -36,6 +36,8 @@
 #include "EndScreenComponent.h"
 #include "EnemyManager.h"
 #include "Callback.h"
+#include "AudioComponent.h"
+#include "../3rdParty/SDL2_mixer-2.0.4/include/SDL_mixer.h"
 #include <random>
 
 
@@ -138,7 +140,7 @@ void CreateScore(dae::Scene* scene) {
 	goUpText->GetTransform()->Translate(0, 200);
 	goUpTextValue->GetTransform()->Translate(20, 220);
 
-	auto width{ 0.f };
+	auto width{ GameWindowSizeX };
 	for (size_t i = 0; i < 3; i++)
 	{
 		GameObject* life{ new GameObject() };
@@ -284,11 +286,7 @@ void MakeStageOfNr(dae::Scene* scene, Stages stageName, float delayTimer) {
 				enemy->GetComponent<EnemyComponent>()->SetLives(2);
 				enemy->AddComponent(new TextureComponent());
 
-				std::random_device randomDevice;
-				std::mt19937 generatedNr(randomDevice());
-				std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
-				double chance = distributeVal(generatedNr);
-				enemy->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
+				enemy->GetComponent<TextureComponent>()->SetTexture("boss2.png");
 				enemy->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
 				enemy->GetComponent<TextureComponent>()->Scale(3, 3);
 				enemy->GetTransform()->Translate(-100, -100);
@@ -352,11 +350,7 @@ void MakeVersusGalaga(dae::Scene* scene) {
 	callback->AddObserver(new GameOverObserver(&CreateEndScreen, scene));
 	opposer->GetComponent<OpposerComponent>()->SetCallback(callback);
 
-	std::random_device randomDevice;
-	std::mt19937 generatedNr(randomDevice());
-	std::uniform_real_distribution<double> distributeVal(0.0, 1.0);
-	double chance = distributeVal(generatedNr);
-	opposer->GetComponent<TextureComponent>()->SetTexture(chance <= 0.4 ? "boss.png" : "boss2.png");
+	opposer->GetComponent<TextureComponent>()->SetTexture("boss2.png");
 	opposer->GetComponent<TextureComponent>()->SetName(EnumStrings[Enemy]);
 	opposer->GetComponent<TextureComponent>(EnumStrings[Enemy])->Scale(3, 3);
 	//opposer->GetTransform()->Translate(WindowSizeX/2, 60);
@@ -505,7 +499,6 @@ void MakeMainMenu(dae::Scene* scene) {
 	std::shared_ptr<GameObject> container = std::make_shared<dae::GameObject>();
 	container->SetName(EnumStrings[MainMenu]);
 	scene->Add(container);
-	//container->AddComponent(new RotatorComponent());
 	container->AddComponent(new MoveMenuComponent(400.f, scene));
 	container->GetTransform()->Translate(0, 720);
 
@@ -616,10 +609,13 @@ void MakeMainMenu(dae::Scene* scene) {
 	company1->GetComponent<TextObjectComponent>()->SetPosition(Margin, WindowSizeY - SubMargin);
 	company2->GetComponent<TextObjectComponent>()->SetPosition(Margin, WindowSizeY - Margin);
 
-	auto go{ new GameObject() };
+	auto go{ std::make_shared<GameObject>() };
+	go->SetName(EnumStrings[Global]);
+	go->AddComponent(new AudioComponent());
 	//go->AddComponent(new MoveKeyboardComponent(go->GetTransform()->GetPosition()));
 	go->AddComponent(new MoveKeyboardComponent(go->GetTransform()->GetPosition()));
 	Input::GetInstance().BindKey({ ButtonStates::BUTTON_UP, SDLK_F1, 0 }, std::make_unique<Skip>(&MakeStageOfNr, scene));
+	scene->Add(go);
 }
 
 void load()
@@ -630,18 +626,8 @@ void load()
 }
 
 int main(int, char* []) {
-	//if (!SteamAPI_Init())
-	//{
-	//	std::cerr << "Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)." << std::endl;
-	//	return 1;
-	//}
-	//else {
-	//	std::cout << "Successfully initialized steam." << std::endl;
-	//}
-
 	dae::Minigin engine("../Data/");
 	engine.Run(load);
 
-	//SteamAPI_Shutdown();
 	return 0;
 }

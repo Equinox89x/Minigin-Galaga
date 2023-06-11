@@ -13,6 +13,7 @@ namespace dae
 		Scene& CreateScene(const std::string& name);
 
 		void Initialize();
+		void PostInitialize();
 		void Update();
 		void Render();
 	private:

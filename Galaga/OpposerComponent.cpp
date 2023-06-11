@@ -1,5 +1,4 @@
 #include "OpposerComponent.h"
-#include "TextureComponent.h"
 #include "PlayerComponent.h"
 #include "Callback.h"
 #include "GalagaMath.h"
@@ -8,6 +7,7 @@
 #include "EnemyManager.h"
 #include "ShootComponent.h"
 #include "CapturedComponent.h"
+#include "AudioComponent.h"
 
 void OpposerComponent::Initialize()
 {
@@ -59,6 +59,8 @@ void OpposerComponent::HandleCaptureAndReturn(glm::vec3& pos)
 		IsDiving = false;
 		CanReturn = false;
 		GetGameObject()->GetTransform()->Translate(EndPosition.x, EndPosition.y);
+		m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->StopSound();
+
 
 		if (ShipCaptured && CurrentCapturedFighter != "") {
 			if (auto fighter{ m_Scene->GetGameObject(CurrentCapturedFighter) }) {
@@ -79,6 +81,9 @@ void OpposerComponent::HandleBeaming(glm::vec3& pos)
 		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetPaused(true);
 		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetFrame(2);
 		IsBeaming = true;
+
+		m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayTractorBeamSound(false);
+
 	}
 }
 
@@ -130,6 +135,9 @@ void OpposerComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 	m_Scene->Add(go);
 	ShipCaptured = true;
 	m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->AcknowledgeFighterCaptured();
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayCapturedTractorBeamSound();
+
 }
 
 void OpposerComponent::HandleRandomMovement(float deltaTime)
@@ -162,10 +170,17 @@ void OpposerComponent::DestroyOpposer()
 	GetGameObject()->EnableCollision(false);
 	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetTexture("explosion.png", 0.1f, 4);
 	GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Enemy])->SetOffset({ -40, -25 });
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDeathSound();
+
 }
 
 void OpposerComponent::ExecuteBeam()
 {
 	IsDiving = true;
 	BeamingTimer = DefaultBeamingTimer;
+
+	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDiveSound(false);
+
+
 }

@@ -66,6 +66,9 @@
     <ClInclude Include="CapturedComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="AudioComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Galaga.cpp">
@@ -99,6 +102,9 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="CapturedComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

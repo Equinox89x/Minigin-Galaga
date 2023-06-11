@@ -32,5 +32,7 @@ private:
 	bool IsStart{ true };
 	int MoveModifier{ 1 }, NrOfCapturedFighers{ 0 };
 	bool IsVersus{ false };
+
+	//void MoveEnemy(GameObject* enemy, float movement);
 };
 
