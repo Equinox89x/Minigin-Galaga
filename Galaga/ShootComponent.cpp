@@ -12,7 +12,7 @@
 #include "AudioComponent.h"
 
 
-void ShootComponent::Shoot()
+void dae::ShootComponent::Shoot()
 {
 	if (auto comp{ GetGameObject()->GetComponent<PlayerComponent>() }) {
 		if (comp->IsDead()) return;
@@ -35,7 +35,7 @@ void ShootComponent::Shoot()
 	}
 }
 
-void ShootComponent::CreateBullet(std::string fileName, std::string name, std::string extention) {
+void dae::ShootComponent::CreateBullet(std::string fileName, std::string name, std::string extention) {
 	auto bullet{ std::make_shared<GameObject>() };
 	bullet->AddComponent(new TextureComponent());
 	bullet->GetComponent<TextureComponent>()->SetTexture(fileName + "." + extention);
@@ -60,7 +60,7 @@ void ShootComponent::CreateBullet(std::string fileName, std::string name, std::s
 	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayShootSound(false);
 }
 
-void ShootComponent::Update()
+void dae::ShootComponent::Update()
 {
 	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
 	std::vector<std::shared_ptr<GameObject>> childen{};
@@ -108,7 +108,7 @@ void ShootComponent::Update()
 	}
 }
 
-void ShootComponent::HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bullet)
+void dae::ShootComponent::HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
 	auto opposers{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[Opposer], "", true, true) };
 	if (opposers.size() <= 0) return;
@@ -126,7 +126,7 @@ void ShootComponent::HandleOpposerOverlap(std::shared_ptr<dae::GameObject>& bull
 	}
 }
 
-void ShootComponent::HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bullet)
+void dae::ShootComponent::HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
 	auto players{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[PlayerGeneral], "", false, true, true) };
 
@@ -141,7 +141,7 @@ void ShootComponent::HandlePlayerOverlap(std::shared_ptr<dae::GameObject>& bulle
 	}
 }
 
-void ShootComponent::HandleCapturedFigherOverlap(std::shared_ptr<dae::GameObject>& bullet)
+void dae::ShootComponent::HandleCapturedFigherOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
 	auto players{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[CapturedFighter], "", false, true, true) };
 
@@ -157,7 +157,7 @@ void ShootComponent::HandleCapturedFigherOverlap(std::shared_ptr<dae::GameObject
 	}
 }
 
-void ShootComponent::HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet)
+void dae::ShootComponent::HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet)
 {
 	auto enemies{ m_Scene->GetOverlappingObjects(bullet.get(), EnumStrings[Enemy], EnumStrings[EnemyHolder], true, true, true) };
 	for (auto enemy : enemies) {
@@ -180,6 +180,6 @@ void ShootComponent::HandleEnemyOverlap(std::shared_ptr<dae::GameObject>& bullet
 	}
 }
 
-void ShootComponent::Render() const
+void dae::ShootComponent::Render() const
 {
 }

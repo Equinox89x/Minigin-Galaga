@@ -4,29 +4,7 @@
 #include "TransformComponent.h"
 #include "EnemyComponent.h"
 
-void MoveEnemy(GameObject* enemy, float movement)
-{
-	if (enemy->GetTransform()->GetPosition().x <= (GameWindowSizeX) / 2.4f) {
-		enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ -movement, 0 });
-		enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ -movement, 0 });
-		enemy->GetTransform()->AddTranslate(-movement, 0);
-	}
-	else {
-		enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
-		enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
-		enemy->GetTransform()->AddTranslate(movement, 0);
-	}
-}
-
-void MoveEnemyDuringSpawn(GameObject* enemy, float movement)
-{
-	enemy->GetTransform()->AddTranslate(movement, 0);
-	enemy->GetComponent<EnemyComponent>()->SetManagerMovement({ movement, 0 });
-	enemy->GetComponent<EnemyComponent>()->TranslateInitialPosition({ movement, 0 });
-}
-
-
-void EnemyManager::Update()
+void dae::EnemyManager::Update()
 {
 	if (IsVersus) return;
 
@@ -76,7 +54,7 @@ void EnemyManager::Update()
 	}
 }
 
-void EnemyManager::CheckStatus()
+void dae::EnemyManager::CheckStatus()
 {
 	if (WasCleared && CanProceedToNextStage) {
 		m_pCallback->Notify(GetGameObject(), Event::StageCleared);
@@ -84,7 +62,7 @@ void EnemyManager::CheckStatus()
 	}
 }
 
-void EnemyManager::DisableEnemies(float disabledTime)
+void dae::EnemyManager::DisableEnemies(float disabledTime)
 {
 	for (auto enemy : m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetChildren(EnumStrings[Enemy])) {
 		enemy->GetComponent<EnemyComponent>()->Disable(disabledTime);

@@ -13,7 +13,7 @@
 #include <glm/gtc/random.hpp>
 #include "AudioComponent.h"
 
-void EnemyComponent::Initialize()
+void dae::EnemyComponent::Initialize()
 {
 	InitialPosition = GetGameObject()->GetTransform()->GetPosition();
 
@@ -29,16 +29,16 @@ void EnemyComponent::Initialize()
 	glm::vec2 P5{ 400.74034, p5conv };
 	glm::vec2 P6{ EndPosition };
 	std::vector<glm::vec2> vec1{ P0, P1, P2, P3, P4, P5, P6 };
-	
-	glm::vec2 P01{ 720-P0.x, 0 };
-	glm::vec2 P11{ 720-P1.x, 100 };
-	glm::vec2 P21{ 720-P2.x, p2conv };
-	glm::vec2 P31{ 720-P3.x, p3conv };
-	glm::vec2 P41{ 720-P4.x, p4conv };
-	glm::vec2 P51{ 720-P5.x, p5conv };
+
+	glm::vec2 P01{ 720 - P0.x, 0 };
+	glm::vec2 P11{ 720 - P1.x, 100 };
+	glm::vec2 P21{ 720 - P2.x, p2conv };
+	glm::vec2 P31{ 720 - P3.x, p3conv };
+	glm::vec2 P41{ 720 - P4.x, p4conv };
+	glm::vec2 P51{ 720 - P5.x, p5conv };
 	glm::vec2 P61{ EndPosition };
-	std::vector<glm::vec2> vec2{ P01, P11, P21, P31, P41, P51, P61 };	
-	
+	std::vector<glm::vec2> vec2{ P01, P11, P21, P31, P41, P51, P61 };
+
 	auto p02conv{ (WindowSizeY - 300) };
 	auto p12conv{ (WindowSizeY - 569) };
 	auto p22conv{ (WindowSizeY + 115) };
@@ -46,8 +46,8 @@ void EnemyComponent::Initialize()
 	glm::vec2 P12{ 862, p12conv };
 	glm::vec2 P22{ 143 , p22conv };
 	glm::vec2 P32{ EndPosition };
-	std::vector<glm::vec2> vec3{ P02, P12, P22, P32 };	
-	
+	std::vector<glm::vec2> vec3{ P02, P12, P22, P32 };
+
 	glm::vec2 P03{ 720 - P02.x, p02conv };
 	glm::vec2 P13{ 720 - P12.x, p12conv };
 	glm::vec2 P23{ 720 - P22.x, p22conv };
@@ -55,7 +55,7 @@ void EnemyComponent::Initialize()
 	std::vector<glm::vec2> vec4{ P03, P13, P23, P33 };
 
 	Paths.push_back(vec1);
-	Paths.push_back(vec2);	
+	Paths.push_back(vec2);
 	Paths.push_back(vec3);
 	Paths.push_back(vec4);
 
@@ -63,8 +63,8 @@ void EnemyComponent::Initialize()
 	glm::vec2 P14{ P04.x - 300, P04.y + 200 };
 	glm::vec2 P24{ P04.x + 300, P04.y + 150 };
 	glm::vec2 P34{ 0, 0 };
-	glm::vec2 P44{ P34.x-150, P34.y+108 };
-	glm::vec2 P54{ P44.x+250, P44.y+102 };
+	glm::vec2 P44{ P34.x - 150, P34.y + 108 };
+	glm::vec2 P54{ P44.x + 250, P44.y + 102 };
 	glm::vec2 P64{ P54.x + 150, P54.y - 455 };
 	glm::vec2 P74{ EndPosition };
 	std::vector<glm::vec2> vec5{ P04, P14, P24, P34, P44, P54, P64, P74 };
@@ -85,7 +85,7 @@ void EnemyComponent::Initialize()
 	GetGameObject()->EnableCollision(true);
 }
 
-void EnemyComponent::Update()
+void dae::EnemyComponent::Update()
 {
 	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
 
@@ -161,7 +161,7 @@ void EnemyComponent::Update()
 	}
 }
 
-void EnemyComponent::HandleZakoDive()
+void dae::EnemyComponent::HandleZakoDive()
 {
 	//move along bezier
 	if (StartTime <= 1.f) {
@@ -171,7 +171,7 @@ void EnemyComponent::HandleZakoDive()
 	}
 }
 
-void EnemyComponent::HandleGeneralDive(glm::vec3& pos, float movement)
+void dae::EnemyComponent::HandleGeneralDive(glm::vec3& pos, float movement)
 {
 	if (!ShouldMoveUp) {
 		if (pos.y >= WindowSizeY) {
@@ -200,7 +200,7 @@ void EnemyComponent::HandleGeneralDive(glm::vec3& pos, float movement)
 	}
 }
 
-void EnemyComponent::HandleBossDive(glm::vec3& pos, float movement)
+void dae::EnemyComponent::HandleBossDive(glm::vec3& pos, float movement)
 {
 	if (IsTractorDiving) {
 		if (pos.y >= WindowSizeY / 1.7f && !CanReturn) {
@@ -225,7 +225,7 @@ void EnemyComponent::HandleBossDive(glm::vec3& pos, float movement)
 	}
 }
 
-void EnemyComponent::HandleChanceCalculation(float deltaTime)
+void dae::EnemyComponent::HandleChanceCalculation(float deltaTime)
 {
 	//check chance to start a dive/attack/shot
 	DiveTimer -= deltaTime;
@@ -266,7 +266,7 @@ void EnemyComponent::HandleChanceCalculation(float deltaTime)
 	}
 }
 
-void EnemyComponent::CalculateZakoDive()
+void dae::EnemyComponent::CalculateZakoDive()
 {
 	auto pos{ m_Scene->GetGameObject(EnumStrings[Player0])->GetTransform()->GetPosition() };
 	int Modifier{ 1 };
@@ -288,7 +288,7 @@ void EnemyComponent::CalculateZakoDive()
 
 }
 
-void EnemyComponent::CalculateGeneralDive()
+void dae::EnemyComponent::CalculateGeneralDive()
 {
 	auto pos1{ GetGameObject()->GetTransform()->GetWorldPosition() };
 	for (auto& point : BombingPath)
@@ -303,7 +303,7 @@ void EnemyComponent::CalculateGeneralDive()
 	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDiveSound(false);
 }
 
-void EnemyComponent::HandleCaptureAndReturn(glm::vec3& pos)
+void dae::EnemyComponent::HandleCaptureAndReturn(glm::vec3& pos)
 {
 	if (pos.y <= EndPosition.y && CanReturn) {
 		CanReturn = false;
@@ -320,7 +320,7 @@ void EnemyComponent::HandleCaptureAndReturn(glm::vec3& pos)
 	}
 }
 
-void EnemyComponent::HandleGrabbing()
+void dae::EnemyComponent::HandleGrabbing()
 {
 	if (CanGrab && EnemyType == EnemyType::BOSS) {
 		auto players{ m_Scene->GetGameObjects(EnumStrings[PlayerGeneral], false) };
@@ -339,7 +339,7 @@ void EnemyComponent::HandleGrabbing()
 	}
 }
 
-void EnemyComponent::ResetBeaming()
+void dae::EnemyComponent::ResetBeaming()
 {
 	IsBeaming = false;
 	CanReturn = true;
@@ -350,7 +350,7 @@ void EnemyComponent::ResetBeaming()
 	CanGrab = true;
 }
 
-void EnemyComponent::CaptureFighter(GameObject* player, GameObject* enemy)
+void dae::EnemyComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 {
 	auto nr{ m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->GetNrOfCapturedFighters() };
 	std::string name{ EnumStrings[CapturedFighter] + std::to_string(nr) };
@@ -375,14 +375,14 @@ void EnemyComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 
 }
 
-void EnemyComponent::Render() const
+void dae::EnemyComponent::Render() const
 {
 	//SDL_Rect rect1{ static_cast<int>(EndPosition.x + 10), static_cast<int>(EndPosition.y + 10), 10,10 };
 	//SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 0, 0, 255, 255); // Set the color to blue
 	//SDL_RenderDrawRect(Renderer::GetInstance().GetSDLRenderer(), &rect1); // D
 }
 
-void EnemyComponent::DestroyEnemy()
+void dae::EnemyComponent::DestroyEnemy()
 {
 	CanDie = true;
 	GetGameObject()->EnableCollision(false);
@@ -392,12 +392,12 @@ void EnemyComponent::DestroyEnemy()
 	m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayDeathSound(false);
 }
 
-void EnemyComponent::TranslateInitialPosition(glm::vec2 addedPos)
+void dae::EnemyComponent::TranslateInitialPosition(glm::vec2 addedPos)
 {
 	EndPosition += addedPos;
 }
 
-void EnemyComponent::Disable(float disabledTime)
+void dae::EnemyComponent::Disable(float disabledTime)
 {
 	CannotAttackTime = disabledTime;
 	if (!CanReturn) CanReturn = true;

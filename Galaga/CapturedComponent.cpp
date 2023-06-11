@@ -6,12 +6,12 @@
 #include "ShootComponent.h"
 #include <random>
 
-void CapturedComponent::Initialize()
+void dae::CapturedComponent::Initialize()
 {
 	GetGameObject()->GetTransform()->Translate(Player->GetTransform()->GetPosition());
 }
 
-void CapturedComponent::Update()
+void dae::CapturedComponent::Update()
 {
 	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
 	if (HasDied) {
@@ -37,7 +37,7 @@ void CapturedComponent::Update()
 		if (futurePos.x < 0) {
 			IsGoingRight = true;
 		}
-		else if (futurePos.x > (GameWindowSizeX) - 60) {
+		else if (futurePos.x > (GameWindowSizeX) -60) {
 			IsGoingRight = false;
 		}
 
@@ -61,7 +61,7 @@ void CapturedComponent::Update()
 	}
 	else {
 		SDL_Rect rect1{ GetGameObject()->GetComponent<TextureComponent>()->GetRect() };
-		SDL_Rect rect2{ EnemyObj->GetComponent<TextureComponent>(EnumStrings[Enemy])->GetRect()};
+		SDL_Rect rect2{ EnemyObj->GetComponent<TextureComponent>(EnumStrings[Enemy])->GetRect() };
 		rect2.y += 10;
 
 		if (GalagaMath::IsOverlapping(rect1, rect2)) {
@@ -72,11 +72,11 @@ void CapturedComponent::Update()
 			GetGameObject()->GetTransform()->AddTranslate(newInterpPos.x, newInterpPos.y);
 		}
 
-		if(ReachedOverlap) GetGameObject()->GetTransform()->Translate(static_cast<float>(rect2.x), static_cast<float>(rect2.y + rect1.h));
+		if (ReachedOverlap) GetGameObject()->GetTransform()->Translate(static_cast<float>(rect2.x), static_cast<float>(rect2.y + rect1.h));
 	}
 }
 
-void CapturedComponent::Die()
+void dae::CapturedComponent::Die()
 {
 	HasDied = true;
 	auto player{ GetGameObject() };

@@ -9,12 +9,12 @@
 #include "CapturedComponent.h"
 #include "AudioComponent.h"
 
-void OpposerComponent::Initialize()
+void dae::OpposerComponent::Initialize()
 {
 	EndPosition = GetGameObject()->GetTransform()->GetPosition();
 }
 
-void OpposerComponent::Update()
+void dae::OpposerComponent::Update()
 {
 	float deltaTime{ Timer::GetInstance().GetDeltaTime() };
 	if (CanDie) {
@@ -37,7 +37,7 @@ void OpposerComponent::Update()
 			float movement{ deltaTime * MaxMoveSpeed };
 			auto pos{ GetGameObject()->GetTransform()->GetPosition() };
 			HandleBeaming(pos);
-			if (!IsBeaming) { 
+			if (!IsBeaming) {
 				GetGameObject()->GetTransform()->AddTranslate(0, CanReturn ? -movement : movement);
 			}
 			else {
@@ -53,7 +53,7 @@ void OpposerComponent::Update()
 	}
 }
 
-void OpposerComponent::HandleCaptureAndReturn(glm::vec3& pos)
+void dae::OpposerComponent::HandleCaptureAndReturn(glm::vec3& pos)
 {
 	if (pos.y <= EndPosition.y && CanReturn) {
 		IsDiving = false;
@@ -74,7 +74,7 @@ void OpposerComponent::HandleCaptureAndReturn(glm::vec3& pos)
 	}
 }
 
-void OpposerComponent::HandleBeaming(glm::vec3& pos)
+void dae::OpposerComponent::HandleBeaming(glm::vec3& pos)
 {
 	if (pos.y >= WindowSizeY / 1.8f && !CanReturn) {
 		GetGameObject()->GetComponent<TextureComponent>(EnumStrings[Weapon])->SetIsVisible(true);
@@ -87,7 +87,7 @@ void OpposerComponent::HandleBeaming(glm::vec3& pos)
 	}
 }
 
-void OpposerComponent::ResetBeaming()
+void dae::OpposerComponent::ResetBeaming()
 {
 	IsBeaming = false;
 	CanReturn = true;
@@ -97,7 +97,7 @@ void OpposerComponent::ResetBeaming()
 	GetGameObject()->EnableCollision(true);
 }
 
-void OpposerComponent::HandleGrabbing()
+void dae::OpposerComponent::HandleGrabbing()
 {
 	if (CanGrab) {
 		if (auto player{ m_Scene->GetGameObject(EnumStrings[Player0]) }) {
@@ -115,7 +115,7 @@ void OpposerComponent::HandleGrabbing()
 	}
 }
 
-void OpposerComponent::CaptureFighter(GameObject* player, GameObject* enemy)
+void dae::OpposerComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 {
 	auto nr{ m_Scene->GetGameObject(EnumStrings[EnemyHolder])->GetComponent<EnemyManager>()->GetNrOfCapturedFighters() };
 	std::string name{ EnumStrings[CapturedFighter] + std::to_string(nr) };
@@ -140,7 +140,7 @@ void OpposerComponent::CaptureFighter(GameObject* player, GameObject* enemy)
 
 }
 
-void OpposerComponent::HandleRandomMovement(float deltaTime)
+void dae::OpposerComponent::HandleRandomMovement(float deltaTime)
 {
 	MoveSpeedChangeTimer -= deltaTime;
 	if (MoveSpeedChangeTimer <= 0) {
@@ -157,14 +157,14 @@ void OpposerComponent::HandleRandomMovement(float deltaTime)
 	if (futurePos.x < 0) {
 		IsGoingRight = true;
 	}
-	else if (futurePos.x >(GameWindowSizeX)-60) {
+	else if (futurePos.x > (GameWindowSizeX)-60) {
 		IsGoingRight = false;
 	}
 
 	GetGameObject()->GetTransform()->AddTranslate(movement, 0);
 }
 
-void OpposerComponent::DestroyOpposer()
+void dae::OpposerComponent::DestroyOpposer()
 {
 	CanDie = true;
 	GetGameObject()->EnableCollision(false);
@@ -175,7 +175,7 @@ void OpposerComponent::DestroyOpposer()
 
 }
 
-void OpposerComponent::ExecuteBeam()
+void dae::OpposerComponent::ExecuteBeam()
 {
 	IsDiving = true;
 	BeamingTimer = DefaultBeamingTimer;

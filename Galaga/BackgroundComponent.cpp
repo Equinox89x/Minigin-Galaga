@@ -2,12 +2,12 @@
 #include "TransformComponent.h"
 #include <Timer.h>
 
-void BackgroundComponent::Initialize()
+void dae::BackgroundComponent::Initialize()
 {
 	GetGameObject()->GetTransform()->Translate(m_InitialPosition);
 }
 
-void BackgroundComponent::Update()
+void dae::BackgroundComponent::Update()
 {
 	auto deltaTime{ Timer::GetInstance().GetDeltaTime() };
 	auto go{ GetGameObject() };

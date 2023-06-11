@@ -2,7 +2,7 @@
 #include "Timer.h"
 #include "Callback.h"
 
-void EndScreenComponent::Update()
+void dae::EndScreenComponent::Update()
 {
 	float dt{ Timer::GetInstance().GetDeltaTime() };
 	EndTimer -= dt;

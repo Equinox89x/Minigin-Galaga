@@ -4,18 +4,18 @@
 #include "Scene.h"
 #include <list>
 
-using namespace dae;
+namespace dae {
 
 	class ShootComponent final : public Component
 	{
 
 	public:
-		ShootComponent(dae::Scene* scene, int id = 0, bool isVersus = false, bool isOpposer = false, bool isEnemy = false) : 
+		ShootComponent(dae::Scene* scene, int id = 0, bool isVersus = false, bool isOpposer = false, bool isEnemy = false) :
 			m_Scene{ scene },
 			Id{ id },
-			StrId{ std::to_string(id) }, 
-			IsVersus{ isVersus }, 
-			IsOpposer{ isOpposer } ,
+			StrId{ std::to_string(id) },
+			IsVersus{ isVersus },
+			IsOpposer{ isOpposer },
 			IsEnemy{ isEnemy }
 		{};
 
@@ -43,10 +43,10 @@ using namespace dae;
 		Scene* m_Scene;
 		std::shared_ptr<GameObject> Bullets{};
 
-		int Id{0};
+		int Id{ 0 };
 		std::string StrId;
 
 		bool IsVersus{ false }, IsOpposer{ false }, IsEnemy{ false };
 	};
-
+}
 

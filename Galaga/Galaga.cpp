@@ -140,7 +140,7 @@ void CreateScore(dae::Scene* scene) {
 	goUpText->GetTransform()->Translate(0, 200);
 	goUpTextValue->GetTransform()->Translate(20, 220);
 
-	auto width{ GameWindowSizeX };
+	float width{ GameWindowSizeX };
 	for (size_t i = 0; i < 3; i++)
 	{
 		GameObject* life{ new GameObject() };
@@ -151,7 +151,7 @@ void CreateScore(dae::Scene* scene) {
 		life->GetComponent<TextureComponent>()->SetTexture("galaga.png");
 		life->GetComponent<TextureComponent>()->Scale(0.6f, 0.6f);
 
-		life->GetTransform()->Translate(width, WindowSizeY / 2);
+		life->GetTransform()->Translate(width, WindowSizeY / 2.f);
 		width += life->GetComponent<TextureComponent>()->GetRect().w + 10;
 	}
 	scene->Add(scoreBoard);

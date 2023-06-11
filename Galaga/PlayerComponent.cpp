@@ -6,12 +6,12 @@
 #include "EnemyManager.h"
 #include "AudioComponent.h"
 
-void PlayerComponent::Update()
+void dae::PlayerComponent::Update()
 {
     if (HasDied) {
         auto deltaTime{ Timer::GetInstance().GetDeltaTime() };
         DeathTimer -= deltaTime;
-        if (DeathTimer < DefaultDeathTimer-0.3f) {
+        if (DeathTimer < DefaultDeathTimer - 0.3f) {
             HandleDeathEnd();
         }
         if (DeathTimer <= 0) {
@@ -24,7 +24,7 @@ void PlayerComponent::Update()
     }
 }
 
-void PlayerComponent::HandleEnemyOverlap()
+void dae::PlayerComponent::HandleEnemyOverlap()
 {
     auto go{ m_Scene->GetGameObject(EnumStrings[EnemyHolder]) };
     if (go) {
@@ -43,7 +43,7 @@ void PlayerComponent::HandleEnemyOverlap()
     }
 }
 
-void PlayerComponent::HandleDeathEnd()
+void dae::PlayerComponent::HandleDeathEnd()
 {
     auto player{ GetGameObject() };
     player->GetComponent<TextureComponent>()->SetIsVisible(false);
@@ -53,7 +53,7 @@ void PlayerComponent::HandleDeathEnd()
     player->GetComponent<TextureComponent>()->SetOffset({ (rect.w * 1.5f) - 1.5f, 0.f });
 }
 
-void PlayerComponent::HandleRespawn()
+void dae::PlayerComponent::HandleRespawn()
 {
     DeathTimer = DefaultDeathTimer;
     HasDied = false;
@@ -64,11 +64,11 @@ void PlayerComponent::HandleRespawn()
     CanBeGrabbed = true;
 }
 
-void PlayerComponent::Die()
+void dae::PlayerComponent::Die()
 {
     HasDied = true;
     auto player{ GetGameObject() };
-    player->GetComponent<TextureComponent>()->Scale(2.5f,2.5f);
+    player->GetComponent<TextureComponent>()->Scale(2.5f, 2.5f);
     player->GetComponent<TextureComponent>()->SetTexture("playerExplosion.png", 0.1f, 4);
     auto rect = player->GetComponent<TextureComponent>()->GetRect();
     player->GetComponent<TextureComponent>()->SetOffset({ -rect.w / 2, -rect.h / 2 });
@@ -82,7 +82,7 @@ void PlayerComponent::Die()
     m_Scene->GetGameObject(EnumStrings[Global])->GetComponent<AudioComponent>()->PlayPlayerDeathSound(false);
 }
 
-void PlayerComponent::Grab()
+void dae::PlayerComponent::Grab()
 {
     HasDied = true;
     auto player{ GetGameObject() };
