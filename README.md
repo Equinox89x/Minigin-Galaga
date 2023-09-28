@@ -17,3 +17,4 @@ Minigin is, despite perhaps the suggestion in its name, not a game engine. It is
 # Use
 
 Download the latest release of this project and compile/run the "Galaga" project in the solution in visual studio.
+Before launching the game, make sure to set Galaga as the startup project.
